@@ -60,6 +60,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * 컴포즈로 화면 만드는데 갤러리/카메라에서 사진 받아다가 화면에다 넣고싶은데 안넣어짐,,, state 문제같은데 왜 그럴까 ㅜㅜ
+     */
     @Composable
     fun NavigationGraph(navController: NavHostController) {
         NavHost(navController = navController, startDestination = Screens.SelectScreen.route) {
