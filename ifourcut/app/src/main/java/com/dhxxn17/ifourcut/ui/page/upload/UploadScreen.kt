@@ -67,8 +67,6 @@ class UploadScreen(
         val viewModel: UploadViewModel = viewModel()
         val showDialog = remember { mutableStateOf(false) }
         val choosePicture = remember { mutableStateOf(PICTURE.NONE) }
-        Log.d("!!!!!!!!!!!!@@", "CreateContent showDialog ${showDialog.value} ")
-        Log.d("!!!!!!!!!!!!@@", "CreateContent choosePicture ${choosePicture.value} ")
 
         val imageUrl by remember {
             mutableStateOf(imageUrl)

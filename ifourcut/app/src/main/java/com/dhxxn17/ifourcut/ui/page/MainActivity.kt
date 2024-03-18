@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
@@ -22,11 +22,13 @@ import com.dhxxn17.ifourcut.ui.navigation.IMAGE_URL_ARG
 import com.dhxxn17.ifourcut.ui.navigation.Screens
 import com.dhxxn17.ifourcut.ui.page.complete.CompleteScreen
 import com.dhxxn17.ifourcut.ui.page.complete.CompleteViewModel
+import com.dhxxn17.ifourcut.ui.page.intro.IntroScreen
 import com.dhxxn17.ifourcut.ui.page.select.SelectScreen
 import com.dhxxn17.ifourcut.ui.page.select.SelectViewModel
 import com.dhxxn17.ifourcut.ui.page.upload.UploadScreen
 import com.dhxxn17.ifourcut.ui.page.upload.UploadViewModel
 import com.dhxxn17.ifourcut.ui.theme.IfourcutTheme
+import com.google.accompanist.pager.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -60,12 +62,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /**
-     * 컴포즈로 화면 만드는데 갤러리/카메라에서 사진 받아다가 화면에다 넣고싶은데 안넣어짐,,, state 문제같은데 왜 그럴까 ㅜㅜ
-     */
     @Composable
     fun NavigationGraph(navController: NavHostController) {
-        NavHost(navController = navController, startDestination = Screens.SelectScreen.route) {
+        NavHost(navController = navController, startDestination = Screens.IntroScreen.route) {
+            composable(Screens.IntroScreen.route) {
+                IntroScreen(navController).CreateContent()
+            }
             composable(Screens.SelectScreen.route) {
                 SelectScreen(selectViewModel, navController).CreateContent()
             }
