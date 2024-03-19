@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,65 +47,42 @@ class SelectScreen(
     @Composable
     override fun CreateContent() {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 12.dp)
+            modifier = Modifier.background(Color.Black).fillMaxSize()
+                .padding(12.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    modifier = Modifier
-                        .background(color = Color(0xffFFF8EE), shape = RoundedCornerShape(12.dp))
-                        .padding(10.dp)
-                        .weight(1f)
-                ) {
+            Text(
+                text = "아이네컷",
+                fontSize = 25.sp,
+                color = Color.White,
+                fontWeight = FontWeight.ExtraBold
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            LazyColumn {
+                items(SelectContract.TYPE.values().size) { _index ->
+
                     Text(
-                        text = "FRAME",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xffFF9800)
+                        text = SelectContract.TYPE.values()[_index].title,
+                        fontSize = 20.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold
                     )
-                    Text(
-                        text = "SELECT",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xffFF9800)
-                    )
-                }
 
-                Image(
-                    painter = painterResource(id = R.drawable.ic_next),
-                    contentDescription = "",
-                    modifier = Modifier.size(50.dp),
-                    colorFilter = ColorFilter.tint(Color(0xffFF9800))
-                )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-            ) {
-                viewModel.state.imageList.value().forEachIndexed { _index, _char ->
-                    item {
-                        CharItem(
-                            imageUrl = _char,
-                            name = viewModel.state.nameList.value()[_index],
-                            onClick = { _imageUrl ->
-                                val encodedUrl =
-                                    URLEncoder.encode(_imageUrl, StandardCharsets.UTF_8.toString())
-                                navController.navigate(
-                                    Screens.UploadScreen.withImageUrl(
-                                        encodedUrl
-                                    )
-                                )
-                            }
-                        )
+                    LazyRow {
+                        items(viewModel.state.data.value().filter { it.second == SelectContract.TYPE.values()[_index] }) { (imageUrl, _) ->
+                            CharItem(
+                                imageUrl = imageUrl,
+                                onClick = { _imageUrl ->
+                                    val encodedUrl = URLEncoder.encode(_imageUrl, StandardCharsets.UTF_8.toString())
+                                    navController.navigate(Screens.UploadScreen.withImageUrl(encodedUrl))
+                                }
+                            )
+                        }
                     }
+
+                    Spacer(modifier = Modifier.height(25.dp))
+
                 }
             }
         }
