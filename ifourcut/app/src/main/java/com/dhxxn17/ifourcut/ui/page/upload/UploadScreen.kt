@@ -15,6 +15,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,7 +65,6 @@ class UploadScreen(
     @Composable
     override fun CreateContent() {
         val viewModel: UploadViewModel = viewModel()
-        val showDialog = remember { mutableStateOf(false) }
         val choosePicture = remember { mutableStateOf(CHOOSE.NONE) }
 
         val imageUrl by remember {
@@ -176,7 +177,7 @@ class UploadScreen(
         }
 
 
-
+        // 카메라/갤러리 선택 했을 때 카메라/갤러리 열기
         when (choosePicture.value) {
             CHOOSE.CAMERA -> {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
@@ -188,6 +189,7 @@ class UploadScreen(
                     takePhotoFromCameraLauncher.launch()
                 }
             }
+
             CHOOSE.GALLERY -> {
                 if (checkPermissionByVersion(context = context).not()) {
                     requestMultiplePermissionsLauncher.launch(permissionsToRequest)
@@ -195,147 +197,170 @@ class UploadScreen(
                     getPhotoFromGalleryLauncher.launch("image/*")
                 }
             }
+
             else -> {}
         }
 
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
-                .padding(horizontal = 24.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Image(
+                painter = painterResource(id = R.drawable.background),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.matchParentSize()
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White.copy(alpha = 0.5f))
+            )
+
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_back),
-                    contentDescription = "",
+                    painterResource(id = R.drawable.ic_back),
+                    contentDescription = null,
                     modifier = Modifier
-                        .size(28.dp)
+                        .padding(12.dp)
+                        .size(30.dp)
                         .clickable {
                             navController.popBackStack()
                         }
                 )
-                Spacer(modifier = Modifier.weight(1f))
+
+                Spacer(modifier = Modifier.height(70.dp))
 
                 Text(
-                    text = "Generate",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xffFF9800),
-                    modifier = Modifier.clickable {
-                        val gallery = galleryImage.value()
-                        val camera = pictureImage.value()
-                        val combine = imageUrl
-                        val encodedUrl =
-                            URLEncoder.encode(imageUrl, StandardCharsets.UTF_8.toString())
-                        navController.navigate(
-                            Screens.CompleteScreen.withImageUrl(
-                                encodedUrl
-                            )
+                    text = "사진을 추가해 주세요",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 25.sp,
+                    color = Color(0xff242323),
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+                Row(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .clickable {
+                                choosePicture.value = CHOOSE.CAMERA
+                            }
+                            .background(Color.White.copy(alpha = 0.5f))
+                            .padding(50.dp)
+
+                    ) {
+                        Image(
+                            painterResource(id = R.drawable.ic_camera),
+                            contentDescription = null,
+                            modifier = Modifier.size(50.dp)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "카메라",
+                            fontSize = 17.sp,
+                            color = Color(0xff242323)
                         )
                     }
-                )
-            }
 
-            when(imageTypeByView) {
-                ImageTypeForView.PhotoShoot -> {
-                    val decodedImage = decodeBase64ToBitmap(viewModel.state.cameraImage.value())
-                    decodedImage?.let { data ->
+                    Spacer(modifier = Modifier.width(20.dp))
+
+                    Column(
+                        modifier = Modifier
+                            .clickable {
+                                choosePicture.value = CHOOSE.GALLERY
+                            }
+                            .background(Color.White.copy(alpha = 0.5f))
+                            .padding(50.dp)
+
+                    ) {
                         Image(
-                            bitmap = data.asImageBitmap(),
+                            painterResource(id = R.drawable.ic_gallery),
                             contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .aspectRatio(1f)
-                                .clip(RoundedCornerShape(12.dp))
+                            modifier = Modifier.size(50.dp)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "갤러리",
+                            fontSize = 17.sp,
+                            color = Color(0xff242323)
                         )
                     }
                 }
-                ImageTypeForView.Gallery -> {
-                    Image(
-                        painter = rememberAsyncImagePainter(galleryImage.value()),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .clip(RoundedCornerShape(12.dp))
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .background(
+                            color = Color(0xffe190aa),
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                ) {
+                    Text(
+                        text = "Tips",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
                     )
                 }
-                ImageTypeForView.Upload -> {
-                    SelectImageView {
-                        showDialog.value = true
-                    }
-                }
-            }
-        }
-    }
 
-    private fun checkPermissionByVersion(context: Context): Boolean {
-        val permissionsToCheck = when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                listOf(
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = "아래 기준에 맞는 사진을 업로드하면 \n 더욱 자연스러운 결과를 얻을 수 있어요.",
+                    color = Color(0xff242323),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "- 정면에서 촬영된 사진 \n - 이마가 잘 보이는 사진 \n - 안경을 벗은 사진",
+                    color = Color(0xff242323),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
-            else -> {
-                listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-            }
         }
-        return permissionsToCheck.all { permission ->
-            ContextCompat.checkSelfPermission(
-                context,
-                permission
-            ) == PackageManager.PERMISSION_GRANTED
-        }
-    }
 
-    private fun decodeBase64ToBitmap(encodedImage: String): Bitmap? {
-        return try {
-            val decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT)
-            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-        } catch (e: IllegalArgumentException) {
-            // Base64 문자열이 유효하지 않은 경우 예외 처리
-            null
-        }
-    }
 
-    @Composable
-    fun SelectImageView(onClickListener: () -> Unit){
-        Column(
-            modifier = Modifier
-                .aspectRatio(1f)
-                .background(
-                    color = Color(0xffFF9800).copy(alpha = 0.08f),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .clickable {
-                    onClickListener.invoke()
-                },
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.ic_upload),
-                contentDescription = "",
-                modifier = Modifier.size(45.dp),
-                colorFilter = ColorFilter.tint(Color(0xffFF9800))
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-            Text(
-                text = "Upload",
-                fontSize = 20.sp,
-                color = Color(0xffFF9800),
-                fontWeight = FontWeight.SemiBold
-            )
-        }
     }
 }
+
+private fun checkPermissionByVersion(context: Context): Boolean {
+    val permissionsToCheck = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+            listOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO
+            )
+        }
+
+        else -> {
+            listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+    return permissionsToCheck.all { permission ->
+        ContextCompat.checkSelfPermission(
+            context,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+}
+
 
 enum class ImageTypeForView {
     Gallery,
