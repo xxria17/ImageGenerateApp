@@ -43,24 +43,11 @@ class SelectViewModel @Inject constructor(
                 "슈퍼맨"
             )
         }
-
-        state.data.sendState {
-            arrayListOf(
-                "https://i.ibb.co/b3By60R/ref8.png" to SelectContract.TYPE.PRINCESS,
-                "https://i.ibb.co/Dkb0Fr0/ref9.png" to SelectContract.TYPE.PRINCESS,
-                "https://i.ibb.co/8mgsxHG/ref10.png" to SelectContract.TYPE.PRINCESS,
-                "https://i.ibb.co/wdnDnZb/ref2.png" to SelectContract.TYPE.PRINCESS,
-                "https://i.ibb.co/kQC7bDb/ref5.png" to SelectContract.TYPE.HERO,
-                "https://i.ibb.co/thLx8kG/ref6.png" to SelectContract.TYPE.HERO,
-                "https://i.ibb.co/QnfwBcN/ref7.png" to SelectContract.TYPE.HERO
-            )
-        }
     }
 
     override fun initialData() {
         state.imageList.sendState { emptyList() }
         state.nameList.sendState { emptyList() }
-        state.data.sendState { emptyList() }
     }
 
     override fun handleEvents(action: BaseUiAction) {
@@ -70,8 +57,7 @@ class SelectViewModel @Inject constructor(
     override fun initialState(): BaseUiState {
         return SelectContract.SelectState(
             imageList = mutableCutStateListOf<String>(emptyList()),
-            nameList = mutableCutStateListOf(emptyList()),
-            data = mutableCutStateListOf(emptyList())
+            nameList = mutableCutStateListOf(emptyList())
         )
     }
 }

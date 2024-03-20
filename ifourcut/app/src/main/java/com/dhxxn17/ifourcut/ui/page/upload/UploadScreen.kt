@@ -49,8 +49,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.dhxxn17.ifourcut.R
-import com.dhxxn17.ifourcut.ui.PICTURE
-import com.dhxxn17.ifourcut.ui.PhotoDialog
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
 import java.io.ByteArrayOutputStream
@@ -66,7 +64,7 @@ class UploadScreen(
     override fun CreateContent() {
         val viewModel: UploadViewModel = viewModel()
         val showDialog = remember { mutableStateOf(false) }
-        val choosePicture = remember { mutableStateOf(PICTURE.NONE) }
+        val choosePicture = remember { mutableStateOf(CHOOSE.NONE) }
 
         val imageUrl by remember {
             mutableStateOf(imageUrl)
@@ -119,13 +117,10 @@ class UploadScreen(
         val getPhotoFromGalleryLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent()
         ) { uri ->
-            Log.d("!!!!!", "uri $uri")
             if (uri != null) {
                 viewModel.sendAction(UploadContract.Action.SetGalleryImage(uri))
-                choosePicture.value = PICTURE.NONE
                 imageTypeByView = ImageTypeForView.Gallery
             } else {
-                choosePicture.value = PICTURE.NONE
                 imageTypeByView = ImageTypeForView.Upload
             }
         }
@@ -144,10 +139,8 @@ class UploadScreen(
                 val byteArray = baos.toByteArray()
                 val encoded = Base64.encodeToString(byteArray, Base64.DEFAULT)
                 viewModel.sendAction(UploadContract.Action.SetCameraImage(encoded))
-                choosePicture.value = PICTURE.NONE
                 imageTypeByView = ImageTypeForView.PhotoShoot
             } else {
-                choosePicture.value = PICTURE.NONE
                 imageTypeByView = ImageTypeForView.Upload
             }
         }
@@ -183,22 +176,9 @@ class UploadScreen(
         }
 
 
-        if (showDialog.value) {
-            PhotoDialog(
-                setShowDialog = {
-                    showDialog.value = it
-                },
-                setChooseData = {
-                    if (it != PICTURE.NONE) {
-                        choosePicture.value = it
-                    }
-                    showDialog.value = false
-                }
-            )
-        }
 
         when (choosePicture.value) {
-            PICTURE.CAMERA -> {
+            CHOOSE.CAMERA -> {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
                     != PackageManager.PERMISSION_GRANTED
                 ) {
@@ -208,7 +188,7 @@ class UploadScreen(
                     takePhotoFromCameraLauncher.launch()
                 }
             }
-            PICTURE.GALLERY -> {
+            CHOOSE.GALLERY -> {
                 if (checkPermissionByVersion(context = context).not()) {
                     requestMultiplePermissionsLauncher.launch(permissionsToRequest)
                 } else {
@@ -361,4 +341,10 @@ enum class ImageTypeForView {
     Gallery,
     Upload,
     PhotoShoot
+}
+
+enum class CHOOSE {
+    CAMERA,
+    GALLERY,
+    NONE
 }
