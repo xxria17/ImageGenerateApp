@@ -1,35 +1,39 @@
 package com.dhxxn17.ifourcut.ui.page.intro
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
+import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.delay
 
 class IntroScreen(
     private val navController: NavController
@@ -39,31 +43,50 @@ class IntroScreen(
     override fun CreateContent() {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
 
-            AutoInfiniteImagePager(
-                images = arrayListOf<String>(
-                    "https://i.ibb.co/b3By60R/ref8.png",
-                    "https://i.ibb.co/Dkb0Fr0/ref9.png",
-                    "https://i.ibb.co/8mgsxHG/ref10.png",
-                    "https://i.ibb.co/wdnDnZb/ref2.png",
-                    "https://i.ibb.co/kQC7bDb/ref5.png",
-                    "https://i.ibb.co/thLx8kG/ref6.png",
-                    "https://i.ibb.co/QnfwBcN/ref7.png"
-                )
+            Image(
+                painter = painterResource(id = R.drawable.background),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.matchParentSize()
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White.copy(alpha = 0.5f))
             )
 
             Column(
-                modifier = Modifier.fillMaxWidth().padding(10.dp).align(Alignment.BottomStart),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(30.dp))
+
                 Text(
-                    text = "AI 캐릭터",
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 45.sp,
-                    color = Color.White
+                    text = buildAnnotatedString {
+                        withStyle(
+                            SpanStyle(
+                                fontWeight = FontWeight.Bold
+                            )
+                        ) {
+                            append("만화 캐릭터 ")
+                        }
+                        withStyle(
+                            SpanStyle(
+                                fontWeight = FontWeight.Light
+                            )
+                        ) {
+                            append("변신")
+                        }
+                    },
+                    fontSize = 30.sp,
+                    color = Color(0xff242323)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -71,72 +94,73 @@ class IntroScreen(
                 Text(
                     text = "내 사진으로 만화 속 캐릭터 되어보기",
                     fontSize = 16.sp,
-                    color = Color.White
+                    color = Color(0xff242323)
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))
 
-                OutlinedButton(
+                Image(
+                    painter = painterResource(id = R.drawable.complete),
+                    contentDescription = null,
+                    modifier = Modifier.size(250.dp)
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.face1),
+                        contentDescription = null,
+                        modifier = Modifier.size(70.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Image(
+                        painter = painterResource(id = R.drawable.heart),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        colorFilter = ColorFilter.tint(Color.White)
+                    )
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Image(
+                        painter = painterResource(id = R.drawable.ref2),
+                        contentDescription = null,
+                        modifier = Modifier.size(70.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+                Button(
                     onClick = {
-                              navController.navigate(
-                                  Screens.SelectScreen.route
-                              )
+                        navController.navigate(
+                            Screens.SelectScreen.route
+                        )
                     },
-                    modifier = Modifier.fillMaxWidth().padding(10.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color.White
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xffe190aa)
                     ),
-                    border = BorderStroke(1.dp, Color.White),
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
                         text = "지금 시작하기",
                         color = Color.White,
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Black
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(10.dp)
                     )
                 }
             }
-        }
-    }
-
-    @OptIn(ExperimentalPagerApi::class)
-    @Composable
-    fun AutoInfiniteImagePager(
-        images: List<String>, // 이미지 URL 목록
-        modifier: Modifier = Modifier,
-        intervalMillis: Long = 3000 // 자동으로 넘어가는 시간 간격 (3초)
-    ) {
-        val pagerState = rememberPagerState()
-
-        // Coroutine을 사용하여 자동 스크롤
-        LaunchedEffect(pagerState) {
-            val pageCount = images.size
-            if (pageCount > 0) {
-                while (true) {
-                    delay(intervalMillis)
-                    val nextPage = (pagerState.currentPage + 1) % pageCount
-                    pagerState.animateScrollToPage(nextPage)
-                }
-            }
-        }
-
-        HorizontalPager(
-            count = images.size,
-            state = pagerState,
-            modifier = modifier
-        ) { page ->
-            Image(
-                painter = rememberImagePainter(images[page]),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f))
-            )
         }
     }
 }
