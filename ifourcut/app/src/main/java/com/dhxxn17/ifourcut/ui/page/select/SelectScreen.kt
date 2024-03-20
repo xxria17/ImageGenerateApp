@@ -1,31 +1,18 @@
 package com.dhxxn17.ifourcut.ui.page.select
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,7 +22,9 @@ import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
 import com.dhxxn17.ifourcut.ui.page.CharItem
-import com.dhxxn17.ifourcut.ui.page.StaggeredVerticalGrid
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -44,48 +33,70 @@ class SelectScreen(
     private val navController: NavController
 ) : BaseScreen() {
 
+    @OptIn(ExperimentalPagerApi::class)
     @Composable
     override fun CreateContent() {
-        Column(
-            modifier = Modifier.background(Color.Black).fillMaxSize()
+        Box(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxSize()
                 .padding(12.dp)
         ) {
-            Text(
-                text = "아이네컷",
-                fontSize = 25.sp,
-                color = Color.White,
-                fontWeight = FontWeight.ExtraBold
+            Image(
+                painter = painterResource(id = R.drawable.background2),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.matchParentSize()
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White.copy(alpha = 0.5f))
+            )
+            Column(
 
-            LazyColumn {
-                items(SelectContract.TYPE.values().size) { _index ->
 
-                    Text(
-                        text = SelectContract.TYPE.values()[_index].title,
-                        fontSize = 20.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold
+            ) {
+                Text(
+                    text = "아이네컷",
+                    fontSize = 25.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 10.dp)
+                )
+
+                Spacer(modifier = Modifier.height(3.dp))
+
+                Text(
+                    text = "원하는 사진을 선택해주세요",
+                    fontSize = 18.sp,
+                    color = Color.Black,
+                    modifier = Modifier.padding(horizontal = 10.dp)
+                )
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                val pagerState = rememberPagerState()
+
+                HorizontalPager(
+                    count = viewModel.state.imageList.value().size,
+                    state = pagerState
+                ) { page ->
+                    CharItem(
+                        imageUrl = viewModel.state.imageList.value()[page],
+                        onClick = { _imageUrl ->
+                            val encodedUrl =
+                                URLEncoder.encode(_imageUrl, StandardCharsets.UTF_8.toString())
+                            navController.navigate(Screens.UploadScreen.withImageUrl(encodedUrl))
+                        },
+                        name = viewModel.state.nameList.value()[page]
                     )
-
-                    LazyRow {
-                        items(viewModel.state.data.value().filter { it.second == SelectContract.TYPE.values()[_index] }) { (imageUrl, _) ->
-                            CharItem(
-                                imageUrl = imageUrl,
-                                onClick = { _imageUrl ->
-                                    val encodedUrl = URLEncoder.encode(_imageUrl, StandardCharsets.UTF_8.toString())
-                                    navController.navigate(Screens.UploadScreen.withImageUrl(encodedUrl))
-                                }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(25.dp))
 
                 }
             }
         }
+
     }
 
 }

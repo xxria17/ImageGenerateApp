@@ -34,8 +34,13 @@ class SelectViewModel @Inject constructor(
 
         state.nameList.sendState {
             arrayListOf<String>(
-                "공주",
-                "영웅"
+                "인어공주",
+                "자스민",
+                "신데렐라",
+                "백설공주",
+                "스파이더맨",
+                "캡틴 아메리카",
+                "슈퍼맨"
             )
         }
 
