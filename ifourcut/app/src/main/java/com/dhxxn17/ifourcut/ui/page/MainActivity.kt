@@ -12,7 +12,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,9 +20,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.dhxxn17.ifourcut.ui.navigation.IMAGE_URL_ARG
 import com.dhxxn17.ifourcut.ui.navigation.Screens
+import com.dhxxn17.ifourcut.ui.page.camera.CameraScreen
 import com.dhxxn17.ifourcut.ui.page.complete.CompleteScreen
 import com.dhxxn17.ifourcut.ui.page.complete.CompleteViewModel
 import com.dhxxn17.ifourcut.ui.page.intro.IntroScreen
+import com.dhxxn17.ifourcut.ui.page.loading.LoadingScreen
 import com.dhxxn17.ifourcut.ui.page.select.SelectScreen
 import com.dhxxn17.ifourcut.ui.page.select.SelectViewModel
 import com.dhxxn17.ifourcut.ui.page.upload.UploadScreen
@@ -87,6 +88,18 @@ class MainActivity : ComponentActivity() {
 
             }
             composable(
+                route = Screens.LoadingScreen.route,
+                arguments = listOf(
+                    navArgument(IMAGE_URL_ARG) {
+                        type = NavType.StringType
+                    }
+                )
+            ) { _backStackEntry ->
+                _backStackEntry.arguments?.getString(IMAGE_URL_ARG)?.let { _imageUrl ->
+                    LoadingScreen(navController, _imageUrl).CreateContent()
+                }
+            }
+            composable(
                 route = Screens.CompleteScreen.route,
                 arguments = listOf(
                     navArgument(IMAGE_URL_ARG) {
@@ -99,14 +112,13 @@ class MainActivity : ComponentActivity() {
                 }
 
             }
+
+            composable(
+                route = Screens.CameraScreen.route
+            ) {
+                CameraScreen(navController).CreateContent()
+            }
         }
-    }
-
-    @Preview
-    @Composable
-    fun PreviewScreen() {
-
-
     }
 
 }

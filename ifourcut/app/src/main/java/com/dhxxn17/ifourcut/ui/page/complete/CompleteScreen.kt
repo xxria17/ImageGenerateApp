@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,96 +41,118 @@ class CompleteScreen (
 
     @Composable
     override fun CreateContent() {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(horizontal = 24.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.Top
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_back),
-                    contentDescription = "",
-                    modifier = Modifier.size(28.dp)
-                        .clickable {
-                            navController.popBackStack()
-                        }
-                )
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
 
             Image(
-                painter = painterResource(id = R.drawable.preview),
-                contentDescription = "",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(400.dp)
+                painter = painterResource(id = R.drawable.background),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.matchParentSize()
             )
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            Row(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = 24.dp,
-                        bottom = 36.dp
-                    )
+                    .fillMaxSize()
+                    .background(Color.White.copy(alpha = 0.5f))
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.Top
             ) {
-                Button(
-                    onClick = {
-
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(58.dp),
-                    shape = RoundedCornerShape(100.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor= Color(0xffFFF8EE),
-                        contentColor= Color(0xffFFF8EE),
-                        disabledContainerColor= Color(0xffFFFFFF),
-                        disabledContentColor= Color(0xffFFFFFF),
-                    )
-
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Download",
-                        fontSize = 16.sp,
-                        color = Color(0xffFF9800)
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_back),
+                        contentDescription = "",
+                        modifier = Modifier.size(28.dp)
+                            .clickable {
+                                navController.popBackStack()
+                                navController.popBackStack()
+                            }
                     )
                 }
 
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                Button(
-                    onClick = {
-
-                    },
+                Image(
+                    painter = painterResource(id = R.drawable.preview),
+                    contentDescription = "",
                     modifier = Modifier
-                        .weight(1f)
-                        .height(58.dp),
-                    shape = RoundedCornerShape(100.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor= Color(0xffFF9800),
-                        contentColor= Color(0xffFF9800),
-                        disabledContainerColor= Color(0xffFFF8EE),
-                        disabledContentColor= Color(0xffFFF8EE),
-                    )
+                        .fillMaxWidth()
+                        .heightIn(400.dp)
+                )
 
+                Spacer(modifier = Modifier.weight(1f))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = 24.dp,
+                            bottom = 36.dp
+                        )
                 ) {
-                    Text(
-                        text = "Share",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
+                    Button(
+                        onClick = {
+
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(58.dp),
+                        shape = RoundedCornerShape(100.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor= Color(0xffFFF8EE),
+                            contentColor= Color(0xffFFF8EE),
+                            disabledContainerColor= Color(0xffFFFFFF),
+                            disabledContentColor= Color(0xffFFFFFF),
+                        )
+
+                    ) {
+                        Text(
+                            text = "저장하기",
+                            fontSize = 16.sp,
+                            color = Color(0xffe190aa)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Button(
+                        onClick = {
+
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(58.dp),
+                        shape = RoundedCornerShape(100.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor= Color(0xffe190aa),
+                            contentColor= Color(0xffe190aa),
+                            disabledContainerColor= Color(0xffFFF8EE),
+                            disabledContentColor= Color(0xffFFF8EE),
+                        )
+
+                    ) {
+                        Text(
+                            text = "공유하기",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }
+
     }
 
 }

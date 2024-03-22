@@ -5,10 +5,13 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
 import android.util.Base64
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.compose.foundation.Image
@@ -19,9 +22,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,10 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -49,11 +47,13 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
 import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -66,29 +66,10 @@ class UploadScreen(
     override fun CreateContent() {
         val viewModel: UploadViewModel = viewModel()
         val choosePicture = remember { mutableStateOf(CHOOSE.NONE) }
-
-        val imageUrl by remember {
-            mutableStateOf(imageUrl)
-        }
-
-        val galleryImage by remember {
-            mutableStateOf(viewModel.state.galleryImage)
-        }
-
-        val pictureImage by remember {
-            mutableStateOf(viewModel.state.cameraImage)
-        }
+        var imageSelected = false
 
         var imageTypeByView by remember {
             mutableStateOf(ImageTypeForView.Upload)
-        }
-
-        LaunchedEffect(viewModel.state.galleryImage) {
-            galleryImage.setValue(viewModel.state.galleryImage.value())
-        }
-
-        LaunchedEffect(viewModel.state.cameraImage) {
-            pictureImage.setValue(viewModel.state.cameraImage.value())
         }
 
         val context = LocalContext.current
@@ -118,11 +99,18 @@ class UploadScreen(
         val getPhotoFromGalleryLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent()
         ) { uri ->
-            if (uri != null) {
-                viewModel.sendAction(UploadContract.Action.SetGalleryImage(uri))
+            if (uri != null && !imageSelected) {
+                Toast.makeText(context, "사진이 선택되었습니다", Toast.LENGTH_SHORT).show()
+                imageSelected = true
+                val imageBitmap = uriToBitmap(context, uri)
+                val imageString = bitmapToString(imageBitmap)
+                val encodedUrl =
+                    URLEncoder.encode(imageString, StandardCharsets.UTF_8.toString())
+                navController.navigate(Screens.LoadingScreen.withImageUrl("$encodedUrl,${ImageTypeForView.Gallery.name}"))
                 imageTypeByView = ImageTypeForView.Gallery
             } else {
-                imageTypeByView = ImageTypeForView.Upload
+//                imageTypeByView = ImageTypeForView.Upload
+                Log.d("TAG", "Selected image uri is null")
             }
         }
 
@@ -131,15 +119,9 @@ class UploadScreen(
             contract = ActivityResultContracts.TakePicturePreview()
         ) { photo ->
             if (photo != null) {
-                val baos = ByteArrayOutputStream()
-                photo.compress(
-                    Bitmap.CompressFormat.PNG,
-                    100,
-                    baos
-                )
-                val byteArray = baos.toByteArray()
-                val encoded = Base64.encodeToString(byteArray, Base64.DEFAULT)
-                viewModel.sendAction(UploadContract.Action.SetCameraImage(encoded))
+                val imagePath = saveBitmapToFile(context, photo)
+                val encodedFilePath = URLEncoder.encode(imagePath, StandardCharsets.UTF_8.toString())
+                navController.navigate(Screens.LoadingScreen.withImageUrl("$encodedFilePath,${ImageTypeForView.PhotoShoot.name}"))
                 imageTypeByView = ImageTypeForView.PhotoShoot
             } else {
                 imageTypeByView = ImageTypeForView.Upload
@@ -152,6 +134,7 @@ class UploadScreen(
                 if (isGranted) {
                     // 권한이 허용되었을 때의 처리 로직
                     takePhotoFromCameraLauncher.launch()
+//                    navController.navigate(Screens.CameraScreen.route)
                 } else {
                     // 권한이 거부되었을 때의 처리 로직
                     Log.e("UploadScreen", "camera permission denied")
@@ -165,12 +148,18 @@ class UploadScreen(
             permissions.entries.forEach {
                 when (it.key) {
                     Manifest.permission.READ_EXTERNAL_STORAGE -> {
-                        getPhotoFromGalleryLauncher.launch("image/*")
+                        if (!imageSelected) {
+                            getPhotoFromGalleryLauncher.launch("image/*")
+                        }
+
                     }
 
                     Manifest.permission.READ_MEDIA_IMAGES,
                     Manifest.permission.READ_MEDIA_VIDEO -> {
-                        getPhotoFromGalleryLauncher.launch("image/*")
+                        if (!imageSelected) {
+                            getPhotoFromGalleryLauncher.launch("image/*")
+                        }
+
                     }
                 }
             }
@@ -178,28 +167,28 @@ class UploadScreen(
 
 
         // 카메라/갤러리 선택 했을 때 카메라/갤러리 열기
-        when (choosePicture.value) {
-            CHOOSE.CAMERA -> {
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-                    != PackageManager.PERMISSION_GRANTED
-                ) {
-                    // 권한이 없을 경우, 사용자에게 권한 요청
-                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                } else {
-                    takePhotoFromCameraLauncher.launch()
+        LaunchedEffect(choosePicture.value) {
+            when (choosePicture.value) {
+                CHOOSE.CAMERA -> {
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        // 권한이 없을 경우, 사용자에게 권한 요청
+                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    } else {
+                        takePhotoFromCameraLauncher.launch()
+//                        navController.navigate(Screens.CameraScreen.route)
+                    }
                 }
-            }
 
-            CHOOSE.GALLERY -> {
-                if (checkPermissionByVersion(context = context).not()) {
+                CHOOSE.GALLERY -> {
                     requestMultiplePermissionsLauncher.launch(permissionsToRequest)
-                } else {
-                    getPhotoFromGalleryLauncher.launch("image/*")
                 }
-            }
 
-            else -> {}
+                else -> {}
+            }
         }
+
 
         Box(
             modifier = Modifier
@@ -361,6 +350,35 @@ private fun checkPermissionByVersion(context: Context): Boolean {
     }
 }
 
+fun uriToBitmap(context: Context, uri: Uri): Bitmap {
+    val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+    return BitmapFactory.decodeStream(inputStream)
+}
+
+fun bitmapToString(bitmap: Bitmap): String {
+    val baos = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+    val byteArray: ByteArray = baos.toByteArray()
+    return Base64.encodeToString(byteArray, Base64.DEFAULT)
+}
+
+fun saveBitmapToFile(context: Context, bitmap: Bitmap): String {
+    val filename = "icut_image_${System.currentTimeMillis()}.png"
+
+    val outputStream: FileOutputStream
+    val file = File(context.cacheDir, filename).apply {
+        if (!exists()) createNewFile()
+    }
+    try {
+        outputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        outputStream.close()
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
+    return file.absolutePath
+}
 
 enum class ImageTypeForView {
     Gallery,
