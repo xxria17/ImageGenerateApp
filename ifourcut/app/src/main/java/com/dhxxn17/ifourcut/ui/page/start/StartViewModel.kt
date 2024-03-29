@@ -1,4 +1,4 @@
-package com.dhxxn17.ifourcut.ui.page.intro
+package com.dhxxn17.ifourcut.ui.page.start
 
 import com.dhxxn17.ifourcut.ui.base.BaseUiAction
 import com.dhxxn17.ifourcut.ui.base.BaseUiState
@@ -7,9 +7,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class IntroViewModel @Inject constructor(): BaseViewModel() {
+class StartViewModel @Inject constructor(): BaseViewModel() {
 
-    val state: IntroContract.IntroState
+    val state: StartContract.IntroState
         get() = state()
 
     init {
@@ -30,7 +30,7 @@ class IntroViewModel @Inject constructor(): BaseViewModel() {
     }
 
     override fun initialState(): BaseUiState {
-        return IntroContract.IntroState(
+        return StartContract.IntroState(
             image = mutableCutStateListOf(emptyList())
         )
     }

@@ -6,6 +6,8 @@ sealed class Screens(val route: String) {
 
     object IntroScreen: Screens("intro_screen")
 
+    object StartScreen: Screens("start_screen")
+
     object SelectScreen: Screens("select_screen")
 
     object UploadScreen: Screens("upload_screen/{$IMAGE_URL_ARG}") {

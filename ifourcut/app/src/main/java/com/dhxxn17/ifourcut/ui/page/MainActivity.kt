@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -27,6 +28,7 @@ import com.dhxxn17.ifourcut.ui.page.intro.IntroScreen
 import com.dhxxn17.ifourcut.ui.page.loading.LoadingScreen
 import com.dhxxn17.ifourcut.ui.page.select.SelectScreen
 import com.dhxxn17.ifourcut.ui.page.select.SelectViewModel
+import com.dhxxn17.ifourcut.ui.page.start.StartScreen
 import com.dhxxn17.ifourcut.ui.page.upload.UploadScreen
 import com.dhxxn17.ifourcut.ui.page.upload.UploadViewModel
 import com.dhxxn17.ifourcut.ui.theme.IfourcutTheme
@@ -69,6 +71,10 @@ class MainActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = Screens.IntroScreen.route) {
             composable(Screens.IntroScreen.route) {
                 IntroScreen(navController).CreateContent()
+            }
+
+            composable(Screens.StartScreen.route) {
+                StartScreen(navController).CreateContent()
             }
             composable(Screens.SelectScreen.route) {
                 SelectScreen(selectViewModel, navController).CreateContent()
