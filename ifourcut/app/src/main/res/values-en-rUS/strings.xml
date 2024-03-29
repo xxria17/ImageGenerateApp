@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ChildOneShoot</string>
+    <string name="intro_title">AI Character</string>
+    <string name="intro_desc">Become a cartoon character with my photo</string>
+    <string name="intro_next">Next</string>
+
+    <string name="start_title_1">Cartoon Character </string>
+    <string name="start_title_2">Transformation </string>
+    <string name="start_button">Start Now</string>
+
+    <string name="select_title">Please select the photo you want</string>
+
+    <string name="upload_toast">Your photo has been selected.</string>
+    <string name="upload_title">Please add a photo</string>
+    <string name="upload_camera">Camera</string>
+    <string name="upload_gallery">Gallery</string>
+    <string name="upload_tip1">If you upload a photo that meets the criteria below, \n you can get more natural results..</string>
+    <string name="upload_tip2">- A photo taken from the front \n- A photo where the forehead is clearly visible \n- A photo with glasses removed</string>
+
+    <string name="loading_title">Transforming into a character</string>
+
+    <string name="complete_save">Save</string>
+    <string name="complete_share">Share</string>
+</resources>

@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -74,7 +75,8 @@ class CompleteScreen (
                     Image(
                         painter = painterResource(id = R.drawable.ic_back),
                         contentDescription = "",
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier
+                            .size(28.dp)
                             .clickable {
                                 navController.popBackStack()
                                 navController.popBackStack()
@@ -119,7 +121,7 @@ class CompleteScreen (
 
                     ) {
                         Text(
-                            text = "저장하기",
+                            text = stringResource(id = R.string.complete_save),
                             fontSize = 16.sp,
                             color = Color(0xffe190aa)
                         )
@@ -144,7 +146,7 @@ class CompleteScreen (
 
                     ) {
                         Text(
-                            text = "공유하기",
+                            text = stringResource(id = R.string.complete_share),
                             fontSize = 16.sp,
                             color = Color.White
                         )

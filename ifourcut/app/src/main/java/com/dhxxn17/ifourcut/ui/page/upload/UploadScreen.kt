@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -99,8 +100,9 @@ class UploadScreen(
         val getPhotoFromGalleryLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent()
         ) { uri ->
+
             if (uri != null && !imageSelected) {
-                Toast.makeText(context, "사진이 선택되었습니다", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.resources.getString(R.string.upload_toast), Toast.LENGTH_SHORT).show()
                 imageSelected = true
                 val imageBitmap = uriToBitmap(context, uri)
                 val imageString = bitmapToString(imageBitmap)
@@ -224,7 +226,7 @@ class UploadScreen(
                 Spacer(modifier = Modifier.height(70.dp))
 
                 Text(
-                    text = "사진을 추가해 주세요",
+                    text = stringResource(id = R.string.upload_title),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 25.sp,
                     color = Color(0xff242323),
@@ -243,7 +245,8 @@ class UploadScreen(
                                 choosePicture.value = CHOOSE.CAMERA
                             }
                             .background(Color.White.copy(alpha = 0.5f))
-                            .padding(50.dp)
+                            .padding(50.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
 
                     ) {
                         Image(
@@ -253,7 +256,7 @@ class UploadScreen(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "카메라",
+                            text = stringResource(id = R.string.upload_camera),
                             fontSize = 17.sp,
                             color = Color(0xff242323)
                         )
@@ -267,8 +270,8 @@ class UploadScreen(
                                 choosePicture.value = CHOOSE.GALLERY
                             }
                             .background(Color.White.copy(alpha = 0.5f))
-                            .padding(50.dp)
-
+                            .padding(50.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Image(
                             painterResource(id = R.drawable.ic_gallery),
@@ -277,7 +280,7 @@ class UploadScreen(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "갤러리",
+                            text = stringResource(id = R.string.upload_gallery),
                             fontSize = 17.sp,
                             color = Color(0xff242323)
                         )
@@ -307,7 +310,7 @@ class UploadScreen(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "아래 기준에 맞는 사진을 업로드하면 \n 더욱 자연스러운 결과를 얻을 수 있어요.",
+                    text = stringResource(id = R.string.upload_tip1),
                     color = Color(0xff242323),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -316,7 +319,7 @@ class UploadScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "- 정면에서 촬영된 사진 \n - 이마가 잘 보이는 사진 \n - 안경을 벗은 사진",
+                    text = stringResource(id = R.string.upload_tip2),
                     color = Color(0xff242323),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,

@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,7 +60,7 @@ class SelectScreen(
 
             ) {
                 Text(
-                    text = "아이네컷",
+                    text = stringResource(id = R.string.app_name),
                     fontSize = 25.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.SemiBold,
@@ -69,7 +70,7 @@ class SelectScreen(
                 Spacer(modifier = Modifier.height(3.dp))
 
                 Text(
-                    text = "원하는 사진을 선택해주세요",
+                    text = stringResource(id = R.string.select_title),
                     fontSize = 18.sp,
                     color = Color.Black,
                     modifier = Modifier.padding(horizontal = 10.dp)
