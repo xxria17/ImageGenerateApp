@@ -100,7 +100,6 @@ class UploadScreen(
         val getPhotoFromGalleryLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent()
         ) { uri ->
-
             if (uri != null && !imageSelected) {
                 Toast.makeText(context, context.resources.getString(R.string.upload_toast), Toast.LENGTH_SHORT).show()
                 imageSelected = true
@@ -110,7 +109,9 @@ class UploadScreen(
                     URLEncoder.encode(imageString, StandardCharsets.UTF_8.toString())
                 navController.navigate(Screens.LoadingScreen.withImageUrl("$encodedUrl,${ImageTypeForView.Gallery.name}"))
                 imageTypeByView = ImageTypeForView.Gallery
+                imageSelected = false
             } else {
+                imageSelected = false
 //                imageTypeByView = ImageTypeForView.Upload
                 Log.d("TAG", "Selected image uri is null")
             }
@@ -147,21 +148,20 @@ class UploadScreen(
         val requestMultiplePermissionsLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
-            permissions.entries.forEach {
+            permissions.entries.forEach permissionLoop@ {
                 when (it.key) {
                     Manifest.permission.READ_EXTERNAL_STORAGE -> {
                         if (!imageSelected) {
                             getPhotoFromGalleryLauncher.launch("image/*")
+                            return@permissionLoop
                         }
-
                     }
-
                     Manifest.permission.READ_MEDIA_IMAGES,
                     Manifest.permission.READ_MEDIA_VIDEO -> {
                         if (!imageSelected) {
                             getPhotoFromGalleryLauncher.launch("image/*")
+                            return@permissionLoop
                         }
-
                     }
                 }
             }
@@ -184,7 +184,19 @@ class UploadScreen(
                 }
 
                 CHOOSE.GALLERY -> {
-                    requestMultiplePermissionsLauncher.launch(permissionsToRequest)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                            requestMultiplePermissionsLauncher.launch(permissionsToRequest)
+                        }else{
+                            getPhotoFromGalleryLauncher.launch("image/*")
+                        }
+                    }else {
+                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                            requestMultiplePermissionsLauncher.launch(permissionsToRequest)
+                        }else{
+                            getPhotoFromGalleryLauncher.launch("image/*")
+                        }
+                    }
                 }
 
                 else -> {}
