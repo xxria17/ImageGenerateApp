@@ -3,19 +3,15 @@ package com.dhxxn17.ifourcut.ui.page.loading
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,29 +43,44 @@ import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
 import com.dhxxn17.ifourcut.ui.page.upload.ImageTypeForView
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
 class LoadingScreen(
     private val navController: NavController,
     private val imageUrl: String
-): BaseScreen() {
+) : BaseScreen() {
+
+    @Composable
+    fun Effect(viewModel: LoadingViewModel) {
+
+        val context = LocalContext.current
+
+        LaunchedEffect(viewModel.effect) {
+            viewModel.effect.onEach { _effect ->
+                when (_effect) {
+                    is LoadingContract.Effect.GoToComplete -> {
+                        navController.navigate(Screens.CompleteScreen.route)
+                    }
+                }
+            }.collect()
+        }
+    }
 
     @Composable
     override fun CreateContent() {
         val viewModel: LoadingViewModel = viewModel()
+        Effect(viewModel)
+
         val filePath = imageUrl.replace("{", "").replace("}", "")
         val parts = filePath.split(",")
 
-        val type = if (parts.size > 1 && parts[1] == ImageTypeForView.PhotoShoot.name) ImageTypeForView.PhotoShoot
+        val type =
+            if (parts.size > 1 && parts[1] == ImageTypeForView.PhotoShoot.name) ImageTypeForView.PhotoShoot
             else ImageTypeForView.Gallery
 
-        // TODO: 임시 코드
-        LaunchedEffect(key1 = true) {
-            delay(3000) // 3초 지연
-            navController.navigate(Screens.CompleteScreen.route)
-        }
 
         val composition by rememberLottieComposition(
             LottieCompositionSpec.RawRes(R.raw.loading_anim)
@@ -127,8 +139,14 @@ class LoadingScreen(
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
-                val decodedImage = if (type == ImageTypeForView.Gallery) decodeBase64ToBitmap(parts[0])
-                 else BitmapFactory.decodeFile(URLDecoder.decode(parts[0], StandardCharsets.UTF_8.toString()))
+                val decodedImage =
+                    if (type == ImageTypeForView.Gallery) decodeBase64ToBitmap(parts[0])
+                    else BitmapFactory.decodeFile(
+                        URLDecoder.decode(
+                            parts[0],
+                            StandardCharsets.UTF_8.toString()
+                        )
+                    )
 
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -149,7 +167,7 @@ class LoadingScreen(
 
                     LottieAnimation(
                         composition = composition,
-                        progress = {progress},
+                        progress = { progress },
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .aspectRatio(1f)

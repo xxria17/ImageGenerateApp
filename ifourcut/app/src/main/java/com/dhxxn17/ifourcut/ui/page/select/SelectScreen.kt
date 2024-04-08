@@ -44,7 +44,7 @@ class SelectScreen(
                 .padding(12.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.background2),
+                painter = painterResource(id = R.drawable.background),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.matchParentSize()

@@ -13,5 +13,9 @@ class LoadingContract {
 
     sealed class Action: BaseUiAction {}
 
-    sealed class Effect: BaseUiEffect {}
+    sealed class Effect: BaseUiEffect {
+        data class GoToComplete(
+            val image: String
+        ): Effect()
+    }
 }
