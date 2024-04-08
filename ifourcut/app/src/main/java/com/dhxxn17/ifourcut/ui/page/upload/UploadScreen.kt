@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -229,7 +230,7 @@ class UploadScreen(
                     text = stringResource(id = R.string.upload_title),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 25.sp,
-                    color = Color(0xff242323),
+                    color = colorResource(id = R.color.main_black),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
@@ -258,7 +259,7 @@ class UploadScreen(
                         Text(
                             text = stringResource(id = R.string.upload_camera),
                             fontSize = 17.sp,
-                            color = Color(0xff242323)
+                            color = colorResource(id = R.color.main_black)
                         )
                     }
 
@@ -282,7 +283,7 @@ class UploadScreen(
                         Text(
                             text = stringResource(id = R.string.upload_gallery),
                             fontSize = 17.sp,
-                            color = Color(0xff242323)
+                            color = colorResource(id = R.color.main_black)
                         )
                     }
                 }
@@ -294,7 +295,7 @@ class UploadScreen(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .background(
-                            color = Color(0xffe190aa),
+                            color = colorResource(id = R.color.main_pink),
                             shape = RoundedCornerShape(20.dp)
                         )
                 ) {
@@ -311,7 +312,7 @@ class UploadScreen(
 
                 Text(
                     text = stringResource(id = R.string.upload_tip1),
-                    color = Color(0xff242323),
+                    color = colorResource(id = R.color.main_black),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -320,7 +321,7 @@ class UploadScreen(
 
                 Text(
                     text = stringResource(id = R.string.upload_tip2),
-                    color = Color(0xff242323),
+                    color = colorResource(id = R.color.main_black),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.align(Alignment.CenterHorizontally)

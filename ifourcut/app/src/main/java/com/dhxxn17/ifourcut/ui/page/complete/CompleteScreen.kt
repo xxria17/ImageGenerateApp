@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -113,17 +114,17 @@ class CompleteScreen (
                             .height(58.dp),
                         shape = RoundedCornerShape(100.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor= Color(0xffFFF8EE),
-                            contentColor= Color(0xffFFF8EE),
-                            disabledContainerColor= Color(0xffFFFFFF),
-                            disabledContentColor= Color(0xffFFFFFF),
+                            containerColor= colorResource(id = R.color.main_white),
+                            contentColor= colorResource(id = R.color.main_white),
+                            disabledContainerColor= colorResource(id = R.color.main_white),
+                            disabledContentColor= colorResource(id = R.color.main_white),
                         )
 
                     ) {
                         Text(
                             text = stringResource(id = R.string.complete_save),
                             fontSize = 16.sp,
-                            color = Color(0xffe190aa)
+                            color = colorResource(id = R.color.main_pink),
                         )
                     }
 
@@ -138,10 +139,10 @@ class CompleteScreen (
                             .height(58.dp),
                         shape = RoundedCornerShape(100.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor= Color(0xffe190aa),
-                            contentColor= Color(0xffe190aa),
-                            disabledContainerColor= Color(0xffFFF8EE),
-                            disabledContentColor= Color(0xffFFF8EE),
+                            containerColor= colorResource(id = R.color.main_pink),
+                            contentColor= colorResource(id = R.color.main_pink),
+                            disabledContainerColor= colorResource(id = R.color.main_white),
+                            disabledContentColor= colorResource(id = R.color.main_white),
                         )
 
                     ) {

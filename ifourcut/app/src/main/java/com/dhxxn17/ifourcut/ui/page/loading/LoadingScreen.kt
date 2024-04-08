@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -64,12 +66,12 @@ class LoadingScreen(
 
         // TODO: 임시 코드
         LaunchedEffect(key1 = true) {
-            delay(5000) // 5초 지연
+            delay(3000) // 3초 지연
             navController.navigate(Screens.CompleteScreen.route)
         }
 
         val composition by rememberLottieComposition(
-            LottieCompositionSpec.RawRes(R.raw.loading)
+            LottieCompositionSpec.RawRes(R.raw.loading_anim)
         )
         val lottieAnimatable = rememberLottieAnimatable()
 
@@ -79,7 +81,7 @@ class LoadingScreen(
             clipSpec = LottieClipSpec.Frame(0, 42),
             iterations = LottieConstants.IterateForever,
             reverseOnRepeat = false,
-            restartOnPlay = true
+            restartOnPlay = false
         )
 
 
@@ -121,7 +123,7 @@ class LoadingScreen(
                     text = stringResource(id = R.string.loading_title),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 25.sp,
-                    color = Color(0xff242323),
+                    color = colorResource(id = R.color.main_black),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
@@ -149,7 +151,8 @@ class LoadingScreen(
                         composition = composition,
                         progress = {progress},
                         contentScale = ContentScale.Fit,
-                        modifier = Modifier.size(100.dp)
+                        modifier = Modifier
+                            .aspectRatio(1f)
                     )
                 }
 
