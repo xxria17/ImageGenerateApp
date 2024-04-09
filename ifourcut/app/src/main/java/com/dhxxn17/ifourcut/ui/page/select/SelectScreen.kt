@@ -10,14 +10,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
@@ -26,17 +30,34 @@ import com.dhxxn17.ifourcut.ui.page.CharItem
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collect
 
 class SelectScreen(
-    private val viewModel: SelectViewModel,
     private val navController: NavController
 ) : BaseScreen() {
+
+    @Composable
+    fun Effect(viewModel: SelectViewModel) {
+        LaunchedEffect(viewModel.effect) {
+            viewModel.effect.onEach { _effect ->
+                when (_effect) {
+                    is SelectContract.Effect.GoToUploadScreen -> {
+                        navController.navigate(Screens.UploadScreen.route)
+                    }
+                }
+            }.collect()
+        }
+    }
 
     @OptIn(ExperimentalPagerApi::class)
     @Composable
     override fun CreateContent() {
+        val context = LocalContext.current
+        val viewModel: SelectViewModel = hiltViewModel()
+
+        Effect(viewModel)
+
         Box(
             modifier = Modifier
                 .background(Color.White)
@@ -55,10 +76,7 @@ class SelectScreen(
                     .fillMaxSize()
                     .background(Color.White.copy(alpha = 0.5f))
             )
-            Column(
-
-
-            ) {
+            Column {
                 Text(
                     text = stringResource(id = R.string.app_name),
                     fontSize = 25.sp,
@@ -84,14 +102,21 @@ class SelectScreen(
                     count = viewModel.state.imageList.value().size,
                     state = pagerState
                 ) { page ->
+                    val name = viewModel.state.nameList.value()[page]
                     CharItem(
                         imageUrl = viewModel.state.imageList.value()[page],
-                        onClick = { _imageUrl ->
-                            val encodedUrl =
-                                URLEncoder.encode(_imageUrl, StandardCharsets.UTF_8.toString())
-                            navController.navigate(Screens.UploadScreen.withImageUrl(encodedUrl))
+                        onClick = { _imageId ->
+                            ContextCompat.getDrawable(context, _imageId)?.let {
+                                viewModel.sendAction(
+                                    SelectContract.Action.SelectCharacter(
+                                        type = name,
+                                        image = it
+                                    )
+                                )
+                            }
+
                         },
-                        name = viewModel.state.nameList.value()[page]
+                        name = name
                     )
 
                 }

@@ -11,7 +11,9 @@ class LoadingContract {
         val image: CutState<String>
     ): BaseUiState
 
-    sealed class Action: BaseUiAction {}
+    sealed class Action: BaseUiAction {
+
+    }
 
     sealed class Effect: BaseUiEffect {
         data class GoToComplete(

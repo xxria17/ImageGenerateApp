@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,21 +27,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 
 class CompleteScreen (
-    private val viewModel: CompleteViewModel,
     private val navController: NavController,
     private val imageUrl: String
 ): BaseScreen() {
 
     @Composable
     override fun CreateContent() {
+        val viewModel: CompleteViewModel = hiltViewModel()
 
         Box(
             modifier = Modifier
@@ -73,12 +73,13 @@ class CompleteScreen (
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_back),
+                    AsyncImage(
+                        model = imageUrl,
                         contentDescription = "",
                         modifier = Modifier
                             .size(28.dp)
                             .clickable {
+                                //TODO
                                 navController.popBackStack()
                                 navController.popBackStack()
                             }

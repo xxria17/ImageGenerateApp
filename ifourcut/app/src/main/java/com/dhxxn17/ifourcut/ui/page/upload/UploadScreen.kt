@@ -3,15 +3,10 @@ package com.dhxxn17.ifourcut.ui.page.upload
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
-import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.compose.foundation.Image
@@ -47,34 +42,48 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dhxxn17.ifourcut.R
+import com.dhxxn17.ifourcut.common.ImageUtils
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
+import kotlinx.coroutines.flow.onEach
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import kotlinx.coroutines.flow.collect
 
 class UploadScreen(
-    private val navController: NavController,
-    private val imageUrl: String
+    private val navController: NavController
 ) : BaseScreen() {
 
     @Composable
+    fun Effect(viewModel: UploadViewModel) {
+        LaunchedEffect(viewModel.effect) {
+            viewModel.effect.onEach { _effect ->
+                when(_effect) {
+                    is UploadContract.Effect.GoToLoadingScreen -> {
+                        navController.navigate(Screens.LoadingScreen.route)
+                    }
+                    else -> {}
+                }
+            }.collect()
+        }
+    }
+
+    @Composable
     override fun CreateContent() {
-        val viewModel: UploadViewModel = viewModel()
+        val viewModel: UploadViewModel = hiltViewModel()
+        val context = LocalContext.current
+
+        Effect(viewModel)
+
         val choosePicture = remember { mutableStateOf(CHOOSE.NONE) }
         var imageSelected = false
 
         var imageTypeByView by remember {
             mutableStateOf(ImageTypeForView.Upload)
         }
-
-        val context = LocalContext.current
 
         val permissionsToRequest by lazy {
             when {
@@ -104,11 +113,9 @@ class UploadScreen(
             if (uri != null && !imageSelected) {
                 Toast.makeText(context, context.resources.getString(R.string.upload_toast), Toast.LENGTH_SHORT).show()
                 imageSelected = true
-                val imageBitmap = uriToBitmap(context, uri)
-                val imageString = bitmapToString(imageBitmap)
-                val encodedUrl =
-                    URLEncoder.encode(imageString, StandardCharsets.UTF_8.toString())
-                navController.navigate(Screens.LoadingScreen.withImageUrl("$encodedUrl,${ImageTypeForView.Gallery.name}"))
+                val imageBitmap = ImageUtils.uriToBitmap(context, uri)
+
+                viewModel.sendAction(UploadContract.Action.SelectImage(imageBitmap))
                 imageTypeByView = ImageTypeForView.Gallery
                 imageSelected = false
             } else {
@@ -123,9 +130,7 @@ class UploadScreen(
             contract = ActivityResultContracts.TakePicturePreview()
         ) { photo ->
             if (photo != null) {
-                val imagePath = saveBitmapToFile(context, photo)
-                val encodedFilePath = URLEncoder.encode(imagePath, StandardCharsets.UTF_8.toString())
-                navController.navigate(Screens.LoadingScreen.withImageUrl("$encodedFilePath,${ImageTypeForView.PhotoShoot.name}"))
+                viewModel.sendAction(UploadContract.Action.SelectImage(photo))
                 imageTypeByView = ImageTypeForView.PhotoShoot
             } else {
                 imageTypeByView = ImageTypeForView.Upload
@@ -138,7 +143,6 @@ class UploadScreen(
                 if (isGranted) {
                     // 권한이 허용되었을 때의 처리 로직
                     takePhotoFromCameraLauncher.launch()
-//                    navController.navigate(Screens.CameraScreen.route)
                 } else {
                     // 권한이 거부되었을 때의 처리 로직
                     Log.e("UploadScreen", "camera permission denied")
@@ -180,7 +184,6 @@ class UploadScreen(
                         cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     } else {
                         takePhotoFromCameraLauncher.launch()
-//                        navController.navigate(Screens.CameraScreen.route)
                     }
                 }
 
@@ -364,36 +367,6 @@ private fun checkPermissionByVersion(context: Context): Boolean {
             permission
         ) == PackageManager.PERMISSION_GRANTED
     }
-}
-
-fun uriToBitmap(context: Context, uri: Uri): Bitmap {
-    val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-    return BitmapFactory.decodeStream(inputStream)
-}
-
-fun bitmapToString(bitmap: Bitmap): String {
-    val baos = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-    val byteArray: ByteArray = baos.toByteArray()
-    return Base64.encodeToString(byteArray, Base64.DEFAULT)
-}
-
-fun saveBitmapToFile(context: Context, bitmap: Bitmap): String {
-    val filename = "icut_image_${System.currentTimeMillis()}.png"
-
-    val outputStream: FileOutputStream
-    val file = File(context.cacheDir, filename).apply {
-        if (!exists()) createNewFile()
-    }
-    try {
-        outputStream = FileOutputStream(file)
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        outputStream.close()
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-
-    return file.absolutePath
 }
 
 enum class ImageTypeForView {

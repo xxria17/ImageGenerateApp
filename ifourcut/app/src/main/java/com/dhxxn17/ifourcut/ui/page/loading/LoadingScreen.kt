@@ -1,8 +1,5 @@
 package com.dhxxn17.ifourcut.ui.page.loading
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -30,7 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
@@ -40,23 +37,18 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieAnimatable
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.dhxxn17.ifourcut.R
+import com.dhxxn17.ifourcut.common.ImageUtils
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
-import com.dhxxn17.ifourcut.ui.page.upload.ImageTypeForView
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-import java.net.URLDecoder
-import java.nio.charset.StandardCharsets
 
 class LoadingScreen(
-    private val navController: NavController,
-    private val imageUrl: String
+    private val navController: NavController
 ) : BaseScreen() {
 
     @Composable
     fun Effect(viewModel: LoadingViewModel) {
-
-        val context = LocalContext.current
 
         LaunchedEffect(viewModel.effect) {
             viewModel.effect.onEach { _effect ->
@@ -75,14 +67,6 @@ class LoadingScreen(
         val context = LocalContext.current
 
         Effect(viewModel)
-
-        val filePath = imageUrl.replace("{", "").replace("}", "")
-        val parts = filePath.split(",")
-
-        val type =
-            if (parts.size > 1 && parts[1] == ImageTypeForView.PhotoShoot.name) ImageTypeForView.PhotoShoot
-            else ImageTypeForView.Gallery
-
 
         val composition by rememberLottieComposition(
             LottieCompositionSpec.RawRes(R.raw.loading_anim)
@@ -141,23 +125,13 @@ class LoadingScreen(
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
-                val decodedImage =
-                    if (type == ImageTypeForView.Gallery) decodeBase64ToBitmap(parts[0])
-                    else BitmapFactory.decodeFile(
-                        URLDecoder.decode(
-                            parts[0],
-                            StandardCharsets.UTF_8.toString()
-                        )
-                    )
-
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-
-                    decodedImage?.let { data ->
+                   if (viewModel.state.image.value().isNotEmpty()) {
                         Image(
-                            bitmap = data.asImageBitmap(),
+                            bitmap = ImageUtils.stringToBitmap(viewModel.state.image.value()).asImageBitmap(),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -182,13 +156,4 @@ class LoadingScreen(
         }
     }
 
-    private fun decodeBase64ToBitmap(encodedImage: String): Bitmap? {
-        return try {
-            val decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT)
-            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-        } catch (e: IllegalArgumentException) {
-            // Base64 문자열이 유효하지 않은 경우 예외 처리
-            null
-        }
-    }
 }

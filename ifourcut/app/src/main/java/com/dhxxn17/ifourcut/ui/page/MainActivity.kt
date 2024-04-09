@@ -13,7 +13,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -27,19 +26,14 @@ import com.dhxxn17.ifourcut.ui.page.complete.CompleteViewModel
 import com.dhxxn17.ifourcut.ui.page.intro.IntroScreen
 import com.dhxxn17.ifourcut.ui.page.loading.LoadingScreen
 import com.dhxxn17.ifourcut.ui.page.select.SelectScreen
-import com.dhxxn17.ifourcut.ui.page.select.SelectViewModel
 import com.dhxxn17.ifourcut.ui.page.start.StartScreen
 import com.dhxxn17.ifourcut.ui.page.upload.UploadScreen
-import com.dhxxn17.ifourcut.ui.page.upload.UploadViewModel
 import com.dhxxn17.ifourcut.ui.theme.IfourcutTheme
 import com.google.accompanist.pager.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val selectViewModel: SelectViewModel by viewModels()
-    private val uploadViewModel: UploadViewModel by viewModels()
-    private val completeViewModel: CompleteViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,33 +73,17 @@ class MainActivity : ComponentActivity() {
                 StartScreen(navController).CreateContent()
             }
             composable(Screens.SelectScreen.route) {
-                SelectScreen(selectViewModel, navController).CreateContent()
+                SelectScreen(navController).CreateContent()
             }
             composable(
-                route = Screens.UploadScreen.route,
-                arguments = listOf(
-                    navArgument(IMAGE_URL_ARG) {
-                        type = NavType.StringType
-                    }
-                )
-            ) { _backStackEntry ->
-                _backStackEntry.arguments?.getString(IMAGE_URL_ARG)?.let { _imageUrl ->
-//                    UploadScreen(uploadViewModel, navController, _imageUrl).CreateContent()
-                    UploadScreen(navController, _imageUrl).CreateContent()
-                }
-
+                route = Screens.UploadScreen.route
+            ) {
+                UploadScreen(navController).CreateContent()
             }
             composable(
-                route = Screens.LoadingScreen.route,
-                arguments = listOf(
-                    navArgument(IMAGE_URL_ARG) {
-                        type = NavType.StringType
-                    }
-                )
-            ) { _backStackEntry ->
-                _backStackEntry.arguments?.getString(IMAGE_URL_ARG)?.let { _imageUrl ->
-                    LoadingScreen(navController, _imageUrl).CreateContent()
-                }
+                route = Screens.LoadingScreen.route
+            ) {
+                LoadingScreen(navController).CreateContent()
             }
             composable(
                 route = Screens.CompleteScreen.route,
@@ -116,7 +94,7 @@ class MainActivity : ComponentActivity() {
                 )
             ) { _backStackEntry ->
                 _backStackEntry.arguments?.getString(IMAGE_URL_ARG)?.let { _imageUrl ->
-                    CompleteScreen(completeViewModel, navController, _imageUrl).CreateContent()
+                    CompleteScreen(navController, _imageUrl).CreateContent()
                 }
 
             }

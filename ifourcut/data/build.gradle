@@ -48,6 +48,7 @@ dependencies {
     implementation deps.room.ktx
     kapt deps.room.compiler
     implementation deps.logger
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
