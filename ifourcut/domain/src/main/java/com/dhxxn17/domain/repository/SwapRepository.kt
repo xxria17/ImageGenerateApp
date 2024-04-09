@@ -6,6 +6,7 @@ import com.dhxxn17.domain.model.SwapImage
 interface SwapRepository {
 
     suspend fun requestSwap(
+        characterType: String,
         beforeImage: String,
         refImage: String
     ): ResultData<SwapImage>

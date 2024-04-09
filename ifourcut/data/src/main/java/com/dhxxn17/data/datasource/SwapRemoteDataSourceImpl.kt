@@ -12,10 +12,12 @@ class SwapRemoteDataSourceImpl @Inject constructor(
 ): SwapRemoteDataSource {
 
     override suspend fun requestSwap(
+        characterType: String,
         beforeImage: String,
         refImage: String
     ): ResultData<SwapImageDto> {
         val map = hashMapOf<String, String>().apply {
+            put(QueryConstant.TYPE, characterType)
             put(QueryConstant.BEFORE_IMAGE, beforeImage)
             put(QueryConstant.REF_IMAGE, refImage)
         }

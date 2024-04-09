@@ -59,6 +59,6 @@ class RetrofitService {
 
     companion object {
         private const val LOGGER_NAME = "WILLOG_LOGGER"
-        private const val BASE_URL = "http://0.0.0.0:7098/character-swap/"
+        private const val BASE_URL = "http://1.215.235.253:17098/"
     }
 }

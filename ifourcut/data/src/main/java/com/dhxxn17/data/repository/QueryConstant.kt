@@ -1,7 +1,7 @@
 package com.dhxxn17.data.repository
 
 object QueryConstant {
-    const val USER_ID = "userId"
-    const val BEFORE_IMAGE = "beforeImage"
-    const val REF_IMAGE = "refImage"
+    const val TYPE = "character_type"
+    const val BEFORE_IMAGE = "face_img"
+    const val REF_IMAGE = "pose_img"
 }

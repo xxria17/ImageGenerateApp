@@ -6,6 +6,7 @@ import com.dhxxn17.domain.model.ResultData
 interface SwapRemoteDataSource {
 
     suspend fun requestSwap(
+        characterType: String,
         beforeImage: String,
         refImage: String
     ): ResultData<SwapImageDto>

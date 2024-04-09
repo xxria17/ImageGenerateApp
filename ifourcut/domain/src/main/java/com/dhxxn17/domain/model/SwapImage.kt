@@ -5,7 +5,5 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class SwapImage(
-    val id: String = "",
-    val resultImage: String = "",
-    val createdTime: String = ""
+    val resultImage: String = ""
 ): Parcelable

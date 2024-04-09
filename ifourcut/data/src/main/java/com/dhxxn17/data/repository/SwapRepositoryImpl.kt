@@ -12,11 +12,12 @@ class SwapRepositoryImpl @Inject constructor(
 ): SwapRepository {
 
     override suspend fun requestSwap(
+        characterType: String,
         beforeImage: String,
         refImage: String
     ): ResultData<SwapImage> {
         val result = swapRemoteDataSource.requestSwap(
-            beforeImage, refImage
+            characterType, beforeImage, refImage
         )
         return if (result is ResultData.Success) {
             ResultData.Success(

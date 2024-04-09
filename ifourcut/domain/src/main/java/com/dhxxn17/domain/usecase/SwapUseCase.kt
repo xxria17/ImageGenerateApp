@@ -10,9 +10,10 @@ class SwapUseCase @Inject constructor(
 ) {
 
     suspend fun requestSwap(
+        characterType: String,
         beforeImage: String,
         refImage: String
     ): ResultData<SwapImage> {
-        return swapRepository.requestSwap(beforeImage, refImage)
+        return swapRepository.requestSwap(characterType, beforeImage, refImage)
     }
 }

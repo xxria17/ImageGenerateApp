@@ -5,7 +5,5 @@ import com.dhxxn17.domain.model.SwapImage
 
 fun SwapImageDto.asDomain() =
     SwapImage(
-        id = this.id,
         resultImage = this.resultImage,
-        createdTime = this.createdAt
     )
