@@ -65,7 +65,7 @@ dependencies {
     implementation deps.compose.ui_tooling_preview
     implementation deps.compose.material3
     implementation deps.hilt.android
-    implementation deps.hilt.compiler
+    kapt deps.hilt.compiler
     implementation deps.coil
     implementation deps.lifecycle_runtime_compose
     implementation deps.navigation_compose

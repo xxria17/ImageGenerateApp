@@ -43,7 +43,7 @@ dependencies {
     implementation deps.serialization.core
     implementation deps.serialization.json
     implementation deps.hilt.android
-    implementation deps.hilt.compiler
+    kapt deps.hilt.compiler
     implementation deps.room.runtime
     implementation deps.room.ktx
     kapt deps.room.compiler

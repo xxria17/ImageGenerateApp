@@ -7,11 +7,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -25,6 +28,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -75,6 +79,14 @@ class IntroScreen(
                 )
             )
 
+            Image(
+                painter = painterResource(id = R.drawable.aizac_logo),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(20.dp)
+                    .align(Alignment.TopStart)
+                    .height(20.dp)
+            )
 
             Column(
                 modifier = Modifier
@@ -85,18 +97,17 @@ class IntroScreen(
             ) {
                 Text(
                     text = stringResource(id = R.string.intro_title),
-                    fontSize = 45.sp,
+                    fontSize = 43.sp,
                     color = Color.White,
-                    fontFamily = FontFamily(
-                        Font(R.font.bitbit)
-                    )
+                    fontWeight = FontWeight.ExtraBold,
+
                 )
 
                 Spacer(modifier = Modifier.height(5.dp))
 
                 Text(
                     text = stringResource(id = R.string.intro_desc),
-                    fontSize = 16.sp,
+                    fontSize = 20.sp,
                     color = Color.White,
                 )
 

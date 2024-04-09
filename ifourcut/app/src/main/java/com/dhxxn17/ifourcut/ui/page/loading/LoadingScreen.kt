@@ -71,7 +71,9 @@ class LoadingScreen(
 
     @Composable
     override fun CreateContent() {
-        val viewModel: LoadingViewModel = viewModel()
+        val viewModel: LoadingViewModel = hiltViewModel()
+        val context = LocalContext.current
+
         Effect(viewModel)
 
         val filePath = imageUrl.replace("{", "").replace("}", "")
