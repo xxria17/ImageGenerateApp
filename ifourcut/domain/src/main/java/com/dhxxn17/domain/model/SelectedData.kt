@@ -6,5 +6,6 @@ import android.graphics.drawable.Drawable
 data class SelectedData(
     val characterType: String = "",
     val characterImage: Drawable?,
-    val myImage: Bitmap?
+    val myImage: Bitmap?,
+    val completeImage: ByteArray?
 )

@@ -23,7 +23,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,13 +33,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 
 class CompleteScreen (
     private val navController: NavController,
-    private val imageUrl: String
 ): BaseScreen() {
 
     @Composable
@@ -73,8 +73,8 @@ class CompleteScreen (
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AsyncImage(
-                        model = imageUrl,
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_back),
                         contentDescription = "",
                         modifier = Modifier
                             .size(28.dp)
@@ -88,13 +88,16 @@ class CompleteScreen (
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Image(
-                    painter = painterResource(id = R.drawable.preview),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(400.dp)
-                )
+                viewModel.state.image.value()?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(400.dp)
+                    )
+
+                }
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -158,5 +161,7 @@ class CompleteScreen (
         }
 
     }
+
+
 
 }

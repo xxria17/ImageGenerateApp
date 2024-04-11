@@ -86,17 +86,9 @@ class MainActivity : ComponentActivity() {
                 LoadingScreen(navController).CreateContent()
             }
             composable(
-                route = Screens.CompleteScreen.route,
-                arguments = listOf(
-                    navArgument(IMAGE_URL_ARG) {
-                        type = NavType.StringType
-                    }
-                )
-            ) { _backStackEntry ->
-                _backStackEntry.arguments?.getString(IMAGE_URL_ARG)?.let { _imageUrl ->
-                    CompleteScreen(navController, _imageUrl).CreateContent()
-                }
-
+                route = Screens.CompleteScreen.route
+            ) {
+                CompleteScreen(navController).CreateContent()
             }
         }
     }

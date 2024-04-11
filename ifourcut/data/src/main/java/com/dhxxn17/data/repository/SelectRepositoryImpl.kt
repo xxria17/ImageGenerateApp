@@ -31,7 +31,7 @@ class SelectRepositoryImpl @Inject constructor(
             )
 
     override suspend fun saveCharacterData(type: String, image: Drawable) {
-        val selectedCharacter = SelectedData(type, image, null)
+        val selectedCharacter = SelectedData(type, image, null, null)
         dataSource.updateSelectData(selectedCharacter.asData())
     }
 
@@ -44,4 +44,11 @@ class SelectRepositoryImpl @Inject constructor(
     override suspend fun getAllData(): Flow<SelectedData> {
         return selectDataFlow
     }
+
+    override suspend fun saveCompleteImage(image: ByteArray?) {
+        val currentData = selectDataFlow.firstOrNull() ?: return
+        val updatedData = currentData.copy(completeImage = image)
+        dataSource.updateSelectData(updatedData.asData())
+    }
+
 }

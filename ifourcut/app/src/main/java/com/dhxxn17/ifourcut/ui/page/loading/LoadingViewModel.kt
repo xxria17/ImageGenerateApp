@@ -1,8 +1,12 @@
 package com.dhxxn17.ifourcut.ui.page.loading
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dhxxn17.domain.model.ResultData
+import com.dhxxn17.domain.usecase.SaveSuccessImageUseCase
 import com.dhxxn17.domain.usecase.SendAllSelectDataUseCase
 import com.dhxxn17.domain.usecase.SwapUseCase
 import com.dhxxn17.ifourcut.common.ImageUtils
@@ -18,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoadingViewModel @Inject constructor(
     private val swapUseCase: SwapUseCase,
-    private val selectUseCase: SendAllSelectDataUseCase
+    private val sendAllSelectDataUseCase: SendAllSelectDataUseCase,
+    private val saveSuccessImageUseCase: SaveSuccessImageUseCase
 ): BaseViewModel() {
 
     val state: LoadingContract.LoadingState
@@ -55,7 +60,7 @@ class LoadingViewModel @Inject constructor(
         if (job != null && job?.isActive == true) return
 
         job = viewModelScope.launch {
-            val data = selectUseCase.invoke()
+            val data = sendAllSelectDataUseCase.invoke()
             val image = data.myImage?.let { ImageUtils.bitmapToString(it) } ?: ""
             state.image.sendState { image }
 
@@ -67,8 +72,10 @@ class LoadingViewModel @Inject constructor(
                 )
 
                 if (response is ResultData.Success) {
-                    response.data?.resultImage?.let { _data ->
-                        sendEffect(LoadingContract.Effect.GoToComplete(_data))
+                    response.data?.let { _data ->
+                        saveSuccessImageUseCase.invoke(_data)
+
+                        sendEffect(LoadingContract.Effect.GoToComplete)
                     }
 
                 } else {

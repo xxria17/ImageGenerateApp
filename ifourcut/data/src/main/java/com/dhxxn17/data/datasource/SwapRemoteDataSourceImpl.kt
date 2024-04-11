@@ -1,18 +1,15 @@
 package com.dhxxn17.data.datasource
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import com.dhxxn17.data.api.SwapApi
-import com.dhxxn17.data.model.RequestData
 import com.dhxxn17.data.network.apiCall
-import com.dhxxn17.data.repository.QueryConstant
-import com.dhxxn17.data.response.SwapImageDto
 import com.dhxxn17.domain.model.ResultData
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
@@ -22,33 +19,59 @@ class SwapRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun requestSwap(
         characterType: String,
-        beforeImage: Bitmap,
-        refImage: Drawable
-    ): ResultData<SwapImageDto> {
+        faceImage: Bitmap,
+        poseImage: Drawable
+    ): ResultData<ByteArray?> {
 
-        val beforeImagePart = bitmapToMultipartBodyPart(beforeImage, "face_img.jpg","face_img")
-        val refImagePart = drawableToMultipartBodyPart(refImage, "pose_img.jpg", "pose_img")
+        val faceByteArray = faceImage.toByteArray()
+        val poseByteArray = poseImage.toByteArray()
 
-        val type = characterType.toRequestBody("multipart/form-data".toMediaTypeOrNull())
+        val typePart = RequestBody.create("text/plain".toMediaTypeOrNull(), characterType)
+        val facePart = MultipartBody.Part.createFormData(
+            "face_img",
+            "face_image.png",
+            RequestBody.create("image/png".toMediaTypeOrNull(), faceByteArray)
+        )
+        val posePart = MultipartBody.Part.createFormData(
+            "pose_img",
+            "pose_image.png",
+            RequestBody.create("image/png".toMediaTypeOrNull(), poseByteArray)
+        )
+
+       // val type = characterType.toRequestBody("multipart/form-data".toMediaTypeOrNull())
 
         return apiCall {
             swapApi.requestSwap(
-                characterType = type,
-                face_img = beforeImagePart,
-                pose_img = refImagePart
+                characterType = typePart,
+                face_img = facePart,
+                pose_img = posePart
             )
         }
     }
 
-    private fun bitmapToMultipartBodyPart(bitmap: Bitmap, filename: String, name: String): MultipartBody.Part {
-        val outputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-        val requestBody = outputStream.toByteArray().toRequestBody("image/jpeg".toMediaTypeOrNull())
-        return MultipartBody.Part.createFormData(name, filename, requestBody)
+    fun Bitmap.toByteArray(): ByteArray {
+        val stream = ByteArrayOutputStream()
+        this.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        return stream.toByteArray()
     }
 
-    private fun drawableToMultipartBodyPart(drawable: Drawable, filename: String, name: String): MultipartBody.Part {
-        val bitmap = (drawable as BitmapDrawable).bitmap
-        return bitmapToMultipartBodyPart(bitmap,name, filename)
+    fun Drawable.toBitmap(): Bitmap {
+        if (this is BitmapDrawable) {
+            return this.bitmap
+        }
+
+        val bitmap = Bitmap.createBitmap(
+            this.intrinsicWidth,
+            this.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        this.setBounds(0, 0, canvas.width, canvas.height)
+        this.draw(canvas)
+        return bitmap
+    }
+
+    fun Drawable.toByteArray(): ByteArray {
+        return this.toBitmap().toByteArray()
     }
 }
