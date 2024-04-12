@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -48,6 +50,8 @@ class StartScreen(
     @Composable
     override fun CreateContent() {
         val view = LocalView.current
+        val scrollState = rememberScrollState()
+
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = Color(0xffe190aa).toArgb()
@@ -74,7 +78,8 @@ class StartScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(10.dp),
+                    .padding(10.dp)
+                    .verticalScroll(scrollState),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(30.dp))
