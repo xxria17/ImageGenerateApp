@@ -14,6 +14,8 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,12 +32,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,6 +56,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
+import com.dhxxn17.ifourcut.ui.navigation.Screens
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -60,9 +65,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class CompleteScreen (
+class CompleteScreen(
     private val navController: NavController,
-): BaseScreen() {
+) : BaseScreen() {
 
     @Composable
     override fun CreateContent() {
@@ -70,10 +75,26 @@ class CompleteScreen (
         val context = LocalContext.current
         val scrollState = rememberScrollState()
 
+        val onBackPressedDispatcher =
+            LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+        DisposableEffect(Unit) {
+            val callback = object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    navController.popBackStack(Screens.UploadScreen.route, false)
+                }
+            }
+            onBackPressedDispatcher?.addCallback(callback)
+            onDispose {
+                callback.remove()
+            }
+        }
+
+
         Box(
             modifier = Modifier
+                .background(Color.White)
                 .fillMaxSize(),
-            contentAlignment = Alignment.Center
         ) {
 
             Image(
@@ -92,25 +113,88 @@ class CompleteScreen (
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                    .padding(vertical = 12.dp)
+                    .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.Top
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_back),
-                        contentDescription = "",
+                    Box(
                         modifier = Modifier
-                            .size(28.dp)
+                            .background(color = Color.White.copy(alpha = 0.5f), shape = CircleShape)
                             .clickable {
-                                //TODO
-                                navController.popBackStack()
-                                navController.popBackStack()
+                                navController.popBackStack(
+                                    navController.graph.startDestinationId,
+                                    false
+                                )
                             }
-                    )
+                            .size(40.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_close),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(15.dp)
+
+                        )
+                    }
+
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Box(
+                        modifier = Modifier
+                            .background(color = Color.White.copy(alpha = 0.5f), shape = CircleShape)
+                            .clickable {
+                                viewModel.state.image
+                                    .value()
+                                    ?.let {
+                                        saveBitmapImage(it, context)
+                                        Toast
+                                            .makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT)
+                                            .show()
+                                    }
+                            }
+                            .size(40.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_download),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(25.dp)
+
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .background(color = Color.White.copy(alpha = 0.5f), shape = CircleShape)
+                            .clickable {
+                                viewModel.state.image
+                                    .value()
+                                    ?.let {
+                                        shareImage(it, context.findActivity())
+                                    }
+                            }
+                            .size(40.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_share),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(25.dp)
+
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -126,76 +210,13 @@ class CompleteScreen (
 
                 }
 
-                Spacer(modifier = Modifier.weight(1f))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = 24.dp,
-                            bottom = 36.dp
-                        )
-                ) {
-                    Button(
-                        onClick = {
-                            viewModel.state.image.value()?.let {
-                                saveBitmapImage(it, context)
-                                Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(58.dp),
-                        shape = RoundedCornerShape(100.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor= colorResource(id = R.color.main_white),
-                            contentColor= colorResource(id = R.color.main_white),
-                            disabledContainerColor= colorResource(id = R.color.main_white),
-                            disabledContentColor= colorResource(id = R.color.main_white),
-                        )
-
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.complete_save),
-                            fontSize = 16.sp,
-                            color = colorResource(id = R.color.main_pink),
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Button(
-                        onClick = {
-                            viewModel.state.image.value()?.let {
-                                shareImage(it, context.findActivity())
-                            }
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(58.dp),
-                        shape = RoundedCornerShape(100.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor= colorResource(id = R.color.main_pink),
-                            contentColor= colorResource(id = R.color.main_pink),
-                            disabledContainerColor= colorResource(id = R.color.main_white),
-                            disabledContentColor= colorResource(id = R.color.main_white),
-                        )
-
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.complete_share),
-                            fontSize = 16.sp,
-                            color = Color.White
-                        )
-                    }
-                }
             }
         }
 
     }
 
     private fun shareImage(bitmap: Bitmap, activity: Activity) {
-        val shareIntent = Intent().apply{
+        val shareIntent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_STREAM, getImageUri(activity, bitmap))
             type = "image/*"
@@ -265,7 +286,9 @@ class CompleteScreen (
                 }
             }
         } else {
-            val imageFileFolder = File(Environment.getExternalStorageDirectory().toString() + '/' + generateFileName())
+            val imageFileFolder = File(
+                Environment.getExternalStorageDirectory().toString() + '/' + generateFileName()
+            )
             if (!imageFileFolder.exists()) {
                 imageFileFolder.mkdirs()
             }
