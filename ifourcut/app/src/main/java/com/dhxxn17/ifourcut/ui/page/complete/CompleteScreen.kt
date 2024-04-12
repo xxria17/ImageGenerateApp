@@ -7,6 +7,9 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -154,7 +157,8 @@ class CompleteScreen(
                                 viewModel.state.image
                                     .value()
                                     ?.let {
-                                        saveBitmapImage(it, context)
+                                        addLogoAndSave(context, it, R.drawable.aizac_logo)
+//                                        saveBitmapImage(it, context)
                                         Toast
                                             .makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT)
                                             .show()
@@ -309,6 +313,22 @@ class CompleteScreen(
                 Log.e("CompleteScreen", "saveBitmapImage: ", e)
             }
         }
+    }
+    private fun addLogoAndSave(context: Context, imageBitmap: Bitmap, logoResId: Int) {
+        val logoBitmap = BitmapFactory.decodeResource(context.resources, logoResId)
+        val scaledLogo = Bitmap.createScaledBitmap(logoBitmap, 400, 120, false)
+
+        val resultBitmap = Bitmap.createBitmap(imageBitmap.width, imageBitmap.height, imageBitmap.config)
+        val canvas = Canvas(resultBitmap)
+
+        canvas.drawBitmap(imageBitmap, 0f, 0f, null)
+
+        val logoX = imageBitmap.width - 400
+        val logoY = imageBitmap.height - 120
+        val dstRect = Rect(logoX, logoY, logoX + 400, logoY + 120)
+        canvas.drawBitmap(scaledLogo, null, dstRect, null)
+
+        saveBitmapImage(resultBitmap, context)
     }
 
 }
