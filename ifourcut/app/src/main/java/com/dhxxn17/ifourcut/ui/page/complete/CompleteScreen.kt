@@ -128,7 +128,7 @@ class CompleteScreen(
                             .background(color = Color.White.copy(alpha = 0.5f), shape = CircleShape)
                             .clickable {
                                 navController.popBackStack(
-                                    navController.graph.startDestinationId,
+                                    Screens.StartScreen.route,
                                     false
                                 )
                             }
