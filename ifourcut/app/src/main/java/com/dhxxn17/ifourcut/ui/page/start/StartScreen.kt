@@ -102,7 +102,8 @@ class StartScreen(
                         }
                     },
                     fontSize = 30.sp,
-                    color = colorResource(id = R.color.main_black)
+                    color = colorResource(id = R.color.main_black),
+                    softWrap = false
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -110,7 +111,8 @@ class StartScreen(
                 Text(
                     text = stringResource(id = R.string.intro_desc),
                     fontSize = 16.sp,
-                    color = colorResource(id = R.color.main_black)
+                    color = colorResource(id = R.color.main_black),
+                    softWrap = false
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))

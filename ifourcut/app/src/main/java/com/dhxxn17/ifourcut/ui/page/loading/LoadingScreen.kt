@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,7 +66,7 @@ class LoadingScreen(
     @Composable
     override fun CreateContent() {
         val viewModel: LoadingViewModel = hiltViewModel()
-        val context = LocalContext.current
+        val scrollState = rememberScrollState()
 
         Effect(viewModel)
 
@@ -113,6 +115,7 @@ class LoadingScreen(
 
             Column(
                 modifier = Modifier.fillMaxSize()
+                    .verticalScroll(scrollState)
             ) {
 
                 Spacer(modifier = Modifier.height(80.dp))

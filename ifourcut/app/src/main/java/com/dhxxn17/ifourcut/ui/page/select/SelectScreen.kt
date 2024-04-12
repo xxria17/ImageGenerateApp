@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,6 +57,7 @@ class SelectScreen(
     override fun CreateContent() {
         val context = LocalContext.current
         val viewModel: SelectViewModel = hiltViewModel()
+        val scrollState = rememberScrollState()
 
         Effect(viewModel)
 
@@ -75,19 +78,19 @@ class SelectScreen(
                     .fillMaxSize()
                     .background(Color.White.copy(alpha = 0.5f))
             )
-            Column {
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    fontSize = 25.sp,
-                    color = Color.Black,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(horizontal = 10.dp)
-                )
-
-                Spacer(modifier = Modifier.height(3.dp))
-
+            Column(
+                modifier = Modifier.verticalScroll(scrollState)
+            ) {
                 Text(
                     text = stringResource(id = R.string.select_title),
+                    fontSize = 25.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(10.dp)
+                )
+
+                Text(
+                    text = stringResource(id = R.string.select_description),
                     fontSize = 18.sp,
                     color = Color.Black,
                     modifier = Modifier.padding(horizontal = 10.dp)

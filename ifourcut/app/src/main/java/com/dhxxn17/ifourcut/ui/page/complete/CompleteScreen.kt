@@ -29,7 +29,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -66,7 +68,7 @@ class CompleteScreen (
     override fun CreateContent() {
         val viewModel: CompleteViewModel = hiltViewModel()
         val context = LocalContext.current
-
+        val scrollState = rememberScrollState()
 
         Box(
             modifier = Modifier
@@ -90,6 +92,7 @@ class CompleteScreen (
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(scrollState)
                     .padding(horizontal = 24.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.Top
             ) {

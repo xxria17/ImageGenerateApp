@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +41,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -75,6 +78,7 @@ class UploadScreen(
     override fun CreateContent() {
         val viewModel: UploadViewModel = hiltViewModel()
         val context = LocalContext.current
+        val scrollState = rememberScrollState()
 
         Effect(viewModel)
 
@@ -227,6 +231,7 @@ class UploadScreen(
 
             Column(
                 modifier = Modifier.fillMaxSize()
+                    .verticalScroll(scrollState)
             ) {
                 Image(
                     painterResource(id = R.drawable.ic_back),
@@ -239,7 +244,7 @@ class UploadScreen(
                         }
                 )
 
-                Spacer(modifier = Modifier.height(70.dp))
+                Spacer(modifier = Modifier.height(50.dp))
 
                 Text(
                     text = stringResource(id = R.string.upload_title),
@@ -330,7 +335,8 @@ class UploadScreen(
                     color = colorResource(id = R.color.main_black),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -339,7 +345,8 @@ class UploadScreen(
                     color = colorResource(id = R.color.main_black),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center
                 )
             }
         }
