@@ -58,8 +58,8 @@ class StartScreen(
         }
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState),
+                .background(Color.White)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
 
@@ -79,6 +79,7 @@ class StartScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(scrollState)
                     .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

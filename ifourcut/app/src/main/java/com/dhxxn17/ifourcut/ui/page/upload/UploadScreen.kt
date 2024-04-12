@@ -205,6 +205,7 @@ class UploadScreen(
 
         Box(
             modifier = Modifier
+                .background(Color.White)
                 .fillMaxSize()
         ) {
             Image(
