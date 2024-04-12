@@ -115,14 +115,7 @@ class UploadScreen(
             if (uri != null && !imageSelected.value) {
                 Toast.makeText(context, context.resources.getString(R.string.upload_toast), Toast.LENGTH_SHORT).show()
                 imageSelected.value = true
-                val imageBitmap = uriToBitmap(context, uri)
-                val imageString = bitmapToString(imageBitmap)
-                val encodedUrl =
-                    URLEncoder.encode(imageString, StandardCharsets.UTF_8.toString())
-                navController.navigate(Screens.LoadingScreen.withImageUrl("$encodedUrl,${ImageTypeForView.Gallery.name}"))
-
                 val imageBitmap = ImageUtils.uriToBitmap(context, uri)
-
                 viewModel.sendAction(UploadContract.Action.SelectImage(imageBitmap))
 
                 imageTypeByView = ImageTypeForView.Gallery
@@ -194,11 +187,7 @@ class UploadScreen(
 
                 CHOOSE.GALLERY -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-                            requestMultiplePermissionsLauncher.launch(permissionsToRequest)
-                        }else{
-                            getPhotoFromGalleryLauncher.launch("image/*")
-                        }
+                        getPhotoFromGalleryLauncher.launch("image/*")
                     }else {
                         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                             requestMultiplePermissionsLauncher.launch(permissionsToRequest)
@@ -354,27 +343,6 @@ class UploadScreen(
         }
 
 
-    }
-}
-
-private fun checkPermissionByVersion(context: Context): Boolean {
-    val permissionsToCheck = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-            listOf(
-                Manifest.permission.READ_MEDIA_IMAGES,
-                Manifest.permission.READ_MEDIA_VIDEO
-            )
-        }
-
-        else -> {
-            listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-    }
-    return permissionsToCheck.all { permission ->
-        ContextCompat.checkSelfPermission(
-            context,
-            permission
-        ) == PackageManager.PERMISSION_GRANTED
     }
 }
 
