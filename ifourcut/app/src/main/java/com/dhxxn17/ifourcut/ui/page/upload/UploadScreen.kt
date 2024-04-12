@@ -83,7 +83,8 @@ class UploadScreen(
         Effect(viewModel)
 
         val choosePicture = remember { mutableStateOf(CHOOSE.NONE) }
-        var imageSelected = false
+        val imageSelected = remember { mutableStateOf(false) }
+        val galleryLaunched = remember { mutableStateOf(false) }
 
         var imageTypeByView by remember {
             mutableStateOf(ImageTypeForView.Upload)
@@ -93,17 +94,14 @@ class UploadScreen(
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
                     arrayOf(
-                        Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO,
+                        Manifest.permission.READ_MEDIA_IMAGES
                     )
                 }
-
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> {
                     arrayOf(
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                     )
                 }
-
                 else -> {
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                 }
@@ -114,16 +112,25 @@ class UploadScreen(
         val getPhotoFromGalleryLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent()
         ) { uri ->
-            if (uri != null && !imageSelected) {
+            if (uri != null && !imageSelected.value) {
                 Toast.makeText(context, context.resources.getString(R.string.upload_toast), Toast.LENGTH_SHORT).show()
-                imageSelected = true
+                imageSelected.value = true
+                val imageBitmap = uriToBitmap(context, uri)
+                val imageString = bitmapToString(imageBitmap)
+                val encodedUrl =
+                    URLEncoder.encode(imageString, StandardCharsets.UTF_8.toString())
+                navController.navigate(Screens.LoadingScreen.withImageUrl("$encodedUrl,${ImageTypeForView.Gallery.name}"))
+
                 val imageBitmap = ImageUtils.uriToBitmap(context, uri)
 
                 viewModel.sendAction(UploadContract.Action.SelectImage(imageBitmap))
+
                 imageTypeByView = ImageTypeForView.Gallery
-                imageSelected = false
+                imageSelected.value = false
+                galleryLaunched.value = false
             } else {
-                imageSelected = false
+                imageSelected.value = false
+                galleryLaunched.value = false
 //                imageTypeByView = ImageTypeForView.Upload
                 Log.d("TAG", "Selected image uri is null")
             }
@@ -157,20 +164,13 @@ class UploadScreen(
         val requestMultiplePermissionsLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
-            permissions.entries.forEach permissionLoop@ {
-                when (it.key) {
-                    Manifest.permission.READ_EXTERNAL_STORAGE -> {
-                        if (!imageSelected) {
-                            getPhotoFromGalleryLauncher.launch("image/*")
-                            return@permissionLoop
-                        }
-                    }
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO -> {
-                        if (!imageSelected) {
-                            getPhotoFromGalleryLauncher.launch("image/*")
-                            return@permissionLoop
-                        }
+            permissions.entries.forEach { (permission, isGranted) ->
+                if (!isGranted || galleryLaunched.value || imageSelected.value) return@forEach
+                when (permission) {
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_MEDIA_IMAGES -> {
+                        getPhotoFromGalleryLauncher.launch("image/*")
+                        galleryLaunched.value = true
                     }
                 }
             }
@@ -189,6 +189,7 @@ class UploadScreen(
                     } else {
                         takePhotoFromCameraLauncher.launch()
                     }
+                    choosePicture.value = CHOOSE.NONE
                 }
 
                 CHOOSE.GALLERY -> {
@@ -205,6 +206,7 @@ class UploadScreen(
                             getPhotoFromGalleryLauncher.launch("image/*")
                         }
                     }
+                    choosePicture.value = CHOOSE.NONE
                 }
 
                 else -> {}
