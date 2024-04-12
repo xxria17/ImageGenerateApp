@@ -34,10 +34,10 @@ class SelectViewModel @Inject constructor(
     override fun loadData() {
         state.imageList.sendState {
             arrayListOf<Int>(
-                R.drawable.select1,
-                R.drawable.select2,
-                R.drawable.select3,
-                R.drawable.select4,
+                R.drawable.select11,
+                R.drawable.select22,
+                R.drawable.select33,
+                R.drawable.select44,
                 R.drawable.select5,
                 R.drawable.select6,
                 R.drawable.select7,
