@@ -44,11 +44,9 @@ class RetrofitService {
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        val gson = GsonBuilder().setLenient().create()
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(ScalarsConverterFactory.create())
-//            .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
             .build()
     }
@@ -61,7 +59,7 @@ class RetrofitService {
     }
 
     companion object {
-        private const val LOGGER_NAME = "WILLOG_LOGGER"
+        private const val LOGGER_NAME = "AIZACSTORY_LOGGER"
         private const val BASE_URL = "http://1.215.235.253:17098/"
     }
 }

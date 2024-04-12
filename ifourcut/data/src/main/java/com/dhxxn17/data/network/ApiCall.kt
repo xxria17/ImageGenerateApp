@@ -12,7 +12,6 @@ suspend inline fun apiCall(
     return try {
 
         val response = call.invoke()
-//        val response = call.invoke()
         if (response.isSuccessful) {
             ResultData.Success(response.body()?.bytes())
         } else {

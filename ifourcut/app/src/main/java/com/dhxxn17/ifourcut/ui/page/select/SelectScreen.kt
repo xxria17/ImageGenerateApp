@@ -62,7 +62,6 @@ class SelectScreen(
             modifier = Modifier
                 .background(Color.White)
                 .fillMaxSize()
-                .padding(12.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.background),
