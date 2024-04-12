@@ -1,5 +1,6 @@
 package com.dhxxn17.ifourcut.ui.page.loading
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -51,12 +53,17 @@ class LoadingScreen(
 
     @Composable
     fun Effect(viewModel: LoadingViewModel) {
+        val context = LocalContext.current
 
         LaunchedEffect(viewModel.effect) {
             viewModel.effect.onEach { _effect ->
                 when (_effect) {
                     is LoadingContract.Effect.GoToComplete -> {
                         navController.navigate(Screens.CompleteScreen.route)
+                    }
+                    is LoadingContract.Effect.RequestFail -> {
+                        Toast.makeText(context, "실패하였습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                        navController.popBackStack()
                     }
                 }
             }.collect()
@@ -93,6 +100,12 @@ class LoadingScreen(
             )
         }
 
+        DisposableEffect(Unit) {
+            onDispose {
+                viewModel.sendAction(LoadingContract.Action.JobCancel)
+            }
+        }
+
 
         Box(
             modifier = Modifier
@@ -114,7 +127,8 @@ class LoadingScreen(
             )
 
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                     .verticalScroll(scrollState)
             ) {
 

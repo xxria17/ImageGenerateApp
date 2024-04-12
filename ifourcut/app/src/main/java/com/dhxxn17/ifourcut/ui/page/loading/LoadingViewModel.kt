@@ -48,6 +48,11 @@ class LoadingViewModel @Inject constructor(
     }
 
     override fun handleEvents(action: BaseUiAction) {
+        when(action) {
+            is LoadingContract.Action.JobCancel -> {
+                cancelRequest()
+            }
+        }
     }
 
     override fun initialState(): BaseUiState {
@@ -79,11 +84,15 @@ class LoadingViewModel @Inject constructor(
                     }
 
                 } else {
-                    // TODO Fail 처리
+                    sendEffect(LoadingContract.Effect.RequestFail)
                     Log.e("LoadingViewModel", "$response.message ")
                 }
             }
         }
+    }
+
+    private fun cancelRequest() {
+        job?.cancel()
     }
 
 }

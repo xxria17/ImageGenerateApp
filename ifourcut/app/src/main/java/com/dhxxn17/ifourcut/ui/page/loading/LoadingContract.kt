@@ -12,10 +12,11 @@ class LoadingContract {
     ): BaseUiState
 
     sealed class Action: BaseUiAction {
-
+        object JobCancel: Action()
     }
 
     sealed class Effect: BaseUiEffect {
         object GoToComplete: Effect()
+        object RequestFail: Effect()
     }
 }
