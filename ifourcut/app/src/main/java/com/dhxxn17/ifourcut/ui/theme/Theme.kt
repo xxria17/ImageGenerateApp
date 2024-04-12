@@ -58,7 +58,7 @@ fun IfourcutTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = Color(0xffe190aa).toArgb()
+//            window.statusBarColor = Color(0xffe190aa).toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }

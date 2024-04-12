@@ -20,7 +20,13 @@ class UploadContract {
         data class SetGalleryImage(
             val imageUri: Uri
         ): Action()
+
+        data class SelectImage(
+            val myImage: Bitmap
+        ): Action()
     }
 
-    sealed class Effect: BaseUiEffect {}
+    sealed class Effect: BaseUiEffect {
+        object GoToLoadingScreen: Effect()
+    }
 }

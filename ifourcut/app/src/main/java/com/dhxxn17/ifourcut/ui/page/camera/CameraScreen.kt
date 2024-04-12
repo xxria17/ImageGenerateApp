@@ -36,7 +36,7 @@ class CameraScreen(
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
                     val byteArray = baos.toByteArray()
                     val encoded = Base64.encodeToString(byteArray, Base64.DEFAULT)
-                    navController.navigate(Screens.LoadingScreen.withImageUrl(encoded))
+                    navController.navigate(Screens.LoadingScreen.route)
                 }
             )
         }

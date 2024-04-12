@@ -1,9 +1,9 @@
 package com.dhxxn17.ifourcut.ui.page.intro
 
+import android.app.Activity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,13 +16,17 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -41,6 +45,11 @@ class IntroScreen(
 
     @Composable
     override fun CreateContent() {
+        val view = LocalView.current
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = Color.Black.toArgb()
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -60,32 +69,18 @@ class IntroScreen(
                     R.drawable.intro9,
                     R.drawable.intro10,
                     R.drawable.intro11,
+                    R.drawable.intro12,
                 )
             )
 
-            Column(
+            Image(
+                painter = painterResource(id = R.drawable.aizac_logo),
+                contentDescription = "",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-                    .align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(id = R.string.intro_title),
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 45.sp,
-                    color = Color.White
-                )
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                Text(
-                    text = stringResource(id = R.string.intro_desc),
-                    fontSize = 16.sp,
-                    color = Color.White
-                )
-
-            }
+                    .padding(20.dp)
+                    .align(Alignment.TopStart)
+                    .height(20.dp)
+            )
 
             Column(
                 modifier = Modifier
@@ -94,6 +89,24 @@ class IntroScreen(
                     .align(Alignment.BottomStart),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text(
+                    text = stringResource(id = R.string.intro_title),
+                    fontSize = 43.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.ExtraBold,
+
+                )
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Text(
+                    text = stringResource(id = R.string.intro_desc),
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(25.dp))
 
                 Button(
                     onClick = {

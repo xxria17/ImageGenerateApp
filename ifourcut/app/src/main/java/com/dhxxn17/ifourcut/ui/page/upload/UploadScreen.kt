@@ -3,11 +3,7 @@ package com.dhxxn17.ifourcut.ui.page.upload
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
-import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -26,7 +22,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,32 +37,51 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dhxxn17.ifourcut.R
+import com.dhxxn17.ifourcut.common.ImageUtils
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
+import kotlinx.coroutines.flow.onEach
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import kotlinx.coroutines.flow.collect
 
 class UploadScreen(
-    private val navController: NavController,
-    private val imageUrl: String
+    private val navController: NavController
 ) : BaseScreen() {
 
     @Composable
+    fun Effect(viewModel: UploadViewModel) {
+        LaunchedEffect(viewModel.effect) {
+            viewModel.effect.onEach { _effect ->
+                when(_effect) {
+                    is UploadContract.Effect.GoToLoadingScreen -> {
+                        navController.navigate(Screens.LoadingScreen.route)
+                    }
+                    else -> {}
+                }
+            }.collect()
+        }
+    }
+
+    @Composable
     override fun CreateContent() {
-        val viewModel: UploadViewModel = viewModel()
+        val viewModel: UploadViewModel = hiltViewModel()
+        val context = LocalContext.current
+        val scrollState = rememberScrollState()
+
+        Effect(viewModel)
+
         val choosePicture = remember { mutableStateOf(CHOOSE.NONE) }
         val imageSelected = remember { mutableStateOf(false) }
         val galleryLaunched = remember { mutableStateOf(false) }
@@ -72,8 +89,6 @@ class UploadScreen(
         var imageTypeByView by remember {
             mutableStateOf(ImageTypeForView.Upload)
         }
-
-        val context = LocalContext.current
 
         val permissionsToRequest by lazy {
             when {
@@ -105,6 +120,11 @@ class UploadScreen(
                 val encodedUrl =
                     URLEncoder.encode(imageString, StandardCharsets.UTF_8.toString())
                 navController.navigate(Screens.LoadingScreen.withImageUrl("$encodedUrl,${ImageTypeForView.Gallery.name}"))
+
+                val imageBitmap = ImageUtils.uriToBitmap(context, uri)
+
+                viewModel.sendAction(UploadContract.Action.SelectImage(imageBitmap))
+
                 imageTypeByView = ImageTypeForView.Gallery
                 imageSelected.value = false
                 galleryLaunched.value = false
@@ -121,9 +141,7 @@ class UploadScreen(
             contract = ActivityResultContracts.TakePicturePreview()
         ) { photo ->
             if (photo != null) {
-                val imagePath = saveBitmapToFile(context, photo)
-                val encodedFilePath = URLEncoder.encode(imagePath, StandardCharsets.UTF_8.toString())
-                navController.navigate(Screens.LoadingScreen.withImageUrl("$encodedFilePath,${ImageTypeForView.PhotoShoot.name}"))
+                viewModel.sendAction(UploadContract.Action.SelectImage(photo))
                 imageTypeByView = ImageTypeForView.PhotoShoot
             } else {
                 imageTypeByView = ImageTypeForView.Upload
@@ -136,7 +154,6 @@ class UploadScreen(
                 if (isGranted) {
                     // 권한이 허용되었을 때의 처리 로직
                     takePhotoFromCameraLauncher.launch()
-//                    navController.navigate(Screens.CameraScreen.route)
                 } else {
                     // 권한이 거부되었을 때의 처리 로직
                     Log.e("UploadScreen", "camera permission denied")
@@ -171,7 +188,6 @@ class UploadScreen(
                         cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     } else {
                         takePhotoFromCameraLauncher.launch()
-//                        navController.navigate(Screens.CameraScreen.route)
                     }
                     choosePicture.value = CHOOSE.NONE
                 }
@@ -217,6 +233,7 @@ class UploadScreen(
 
             Column(
                 modifier = Modifier.fillMaxSize()
+                    .verticalScroll(scrollState)
             ) {
                 Image(
                     painterResource(id = R.drawable.ic_back),
@@ -229,13 +246,13 @@ class UploadScreen(
                         }
                 )
 
-                Spacer(modifier = Modifier.height(70.dp))
+                Spacer(modifier = Modifier.height(50.dp))
 
                 Text(
                     text = stringResource(id = R.string.upload_title),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 25.sp,
-                    color = Color(0xff242323),
+                    color = colorResource(id = R.color.main_black),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
@@ -264,7 +281,7 @@ class UploadScreen(
                         Text(
                             text = stringResource(id = R.string.upload_camera),
                             fontSize = 17.sp,
-                            color = Color(0xff242323)
+                            color = colorResource(id = R.color.main_black)
                         )
                     }
 
@@ -288,7 +305,7 @@ class UploadScreen(
                         Text(
                             text = stringResource(id = R.string.upload_gallery),
                             fontSize = 17.sp,
-                            color = Color(0xff242323)
+                            color = colorResource(id = R.color.main_black)
                         )
                     }
                 }
@@ -300,7 +317,7 @@ class UploadScreen(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .background(
-                            color = Color(0xffe190aa),
+                            color = colorResource(id = R.color.main_pink),
                             shape = RoundedCornerShape(20.dp)
                         )
                 ) {
@@ -317,19 +334,21 @@ class UploadScreen(
 
                 Text(
                     text = stringResource(id = R.string.upload_tip1),
-                    color = Color(0xff242323),
+                    color = colorResource(id = R.color.main_black),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = stringResource(id = R.string.upload_tip2),
-                    color = Color(0xff242323),
+                    color = colorResource(id = R.color.main_black),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -357,36 +376,6 @@ private fun checkPermissionByVersion(context: Context): Boolean {
             permission
         ) == PackageManager.PERMISSION_GRANTED
     }
-}
-
-fun uriToBitmap(context: Context, uri: Uri): Bitmap {
-    val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-    return BitmapFactory.decodeStream(inputStream)
-}
-
-fun bitmapToString(bitmap: Bitmap): String {
-    val baos = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-    val byteArray: ByteArray = baos.toByteArray()
-    return Base64.encodeToString(byteArray, Base64.DEFAULT)
-}
-
-fun saveBitmapToFile(context: Context, bitmap: Bitmap): String {
-    val filename = "icut_image_${System.currentTimeMillis()}.png"
-
-    val outputStream: FileOutputStream
-    val file = File(context.cacheDir, filename).apply {
-        if (!exists()) createNewFile()
-    }
-    try {
-        outputStream = FileOutputStream(file)
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        outputStream.close()
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-
-    return file.absolutePath
 }
 
 enum class ImageTypeForView {

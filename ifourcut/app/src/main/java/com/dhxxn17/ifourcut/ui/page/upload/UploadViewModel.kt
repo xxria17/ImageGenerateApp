@@ -1,18 +1,29 @@
 package com.dhxxn17.ifourcut.ui.page.upload
 
+import android.graphics.Bitmap
+import androidx.lifecycle.viewModelScope
+import com.dhxxn17.domain.usecase.SelectUserDataUseCase
 import com.dhxxn17.ifourcut.ui.base.BaseUiAction
 import com.dhxxn17.ifourcut.ui.base.BaseUiState
 import com.dhxxn17.ifourcut.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class UploadViewModel @Inject constructor(
-
+    private val selectUseCase: SelectUserDataUseCase
 ): BaseViewModel() {
 
     val state: UploadContract.UploadState
         get() = state()
+
+    val effect: Flow<UploadContract.Effect>
+        get() = effect()
+
+    private var job: Job? = null
 
     init {
         initialData()
@@ -35,6 +46,9 @@ class UploadViewModel @Inject constructor(
             is UploadContract.Action.SetGalleryImage -> {
                 state.galleryImage.sendState { action.imageUri }
             }
+            is UploadContract.Action.SelectImage -> {
+                selectMyImage(action.myImage)
+            }
         }
     }
 
@@ -43,5 +57,16 @@ class UploadViewModel @Inject constructor(
             galleryImage = mutableCutStateOf(null),
             cameraImage = mutableCutStateOf("")
         )
+    }
+
+    private fun selectMyImage(image: Bitmap) {
+        if (job != null && job?.isActive == true) return
+
+        job = viewModelScope.launch {
+            selectUseCase.invoke(image)
+
+            sendEffect(UploadContract.Effect.GoToLoadingScreen)
+        }
+
     }
 }

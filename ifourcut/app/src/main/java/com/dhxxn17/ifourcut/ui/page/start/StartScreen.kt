@@ -1,5 +1,6 @@
 package com.dhxxn17.ifourcut.ui.page.start
 
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,11 +21,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -44,7 +49,13 @@ class StartScreen(
 
     @Composable
     override fun CreateContent() {
+        val view = LocalView.current
         val scrollState = rememberScrollState()
+
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = Color(0xffe190aa).toArgb()
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -91,7 +102,8 @@ class StartScreen(
                         }
                     },
                     fontSize = 30.sp,
-                    color = Color(0xff242323)
+                    color = colorResource(id = R.color.main_black),
+                    softWrap = false
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -99,7 +111,8 @@ class StartScreen(
                 Text(
                     text = stringResource(id = R.string.intro_desc),
                     fontSize = 16.sp,
-                    color = Color(0xff242323)
+                    color = colorResource(id = R.color.main_black),
+                    softWrap = false
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))
@@ -153,7 +166,7 @@ class StartScreen(
                         .fillMaxWidth()
                         .padding(20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xffe190aa)
+                        containerColor = colorResource(id = R.color.main_pink),
                     ),
                     shape = RoundedCornerShape(10.dp)
                 ) {

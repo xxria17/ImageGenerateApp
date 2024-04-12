@@ -9,7 +9,8 @@
     <string name="start_title_2">変身 </string>
     <string name="start_button">今始める</string>
 
-    <string name="select_title">好きな写真を選んでください。</string>
+    <string name="select_title">キャラクター選択</string>
+    <string name="select_description">好きな写真を選んでください。</string>
 
     <string name="upload_toast">写真が選択されました.</string>
     <string name="upload_title">写真を追加してください</string>
