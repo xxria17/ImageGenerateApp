@@ -66,7 +66,7 @@ class CameraCompleteScreen(
 
                 Text(
                     text = "다음",
-                    fontSize = 18.sp,
+                    fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     modifier = Modifier.clickable {

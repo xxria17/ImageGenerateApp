@@ -46,6 +46,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -92,7 +93,7 @@ fun CameraScreen(
     var lensFacing by remember { mutableStateOf(CameraSelector.LENS_FACING_FRONT) }
     val lifecycleOwner = LocalLifecycleOwner.current
     val imageCapture = remember { ImageCapture.Builder().build() }
-
+    val isLoading = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -160,18 +161,23 @@ fun CameraScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Image(
-                    painterResource(id = R.drawable.ic_pic),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .size(50.dp)
-                        .clickable {
-                            takePhoto(imageCapture, context, onSuccessListener = {
-                                onCompleteController.invoke(it)
-                            })
-                        },
-                )
+                if (isLoading.value) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterVertically))
+                } else {
+                    Image(
+                        painterResource(id = R.drawable.ic_pic),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .size(50.dp)
+                            .clickable {
+                                isLoading.value = true
+                                takePhoto(imageCapture, context, onSuccessListener = {
+                                    onCompleteController.invoke(it)
+                                })
+                            },
+                    )
+                }
             }
 
         }
