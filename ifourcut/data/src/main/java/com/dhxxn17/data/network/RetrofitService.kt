@@ -1,8 +1,8 @@
 package com.dhxxn17.data.network
 
 import android.util.Log
+import com.dhxxn17.data.BuildConfig
 import com.dhxxn17.data.api.SwapApi
-import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,7 +45,7 @@ class RetrofitService {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(ScalarsConverterFactory.create())
             .client(okHttpClient)
             .build()
@@ -60,6 +60,6 @@ class RetrofitService {
 
     companion object {
         private const val LOGGER_NAME = "AIZACSTORY_LOGGER"
-        private const val BASE_URL = "http://1.215.235.253:17098/"
+        private const val BASE_URL =""
     }
 }
