@@ -41,7 +41,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieAnimatable
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.dhxxn17.ifourcut.R
-import com.dhxxn17.ifourcut.common.ImageUtils
+import com.dhxxn17.ifourcut.common.stringToBitmap
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
 import kotlinx.coroutines.flow.collect
@@ -148,7 +148,7 @@ class LoadingScreen(
                 ) {
                    if (viewModel.state.image.value().isNotEmpty()) {
                         Image(
-                            bitmap = ImageUtils.stringToBitmap(viewModel.state.image.value()).asImageBitmap(),
+                            bitmap = stringToBitmap(viewModel.state.image.value()).asImageBitmap(),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier

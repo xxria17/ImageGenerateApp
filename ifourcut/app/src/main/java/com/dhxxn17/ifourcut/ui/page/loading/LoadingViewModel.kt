@@ -1,15 +1,12 @@
 package com.dhxxn17.ifourcut.ui.page.loading
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dhxxn17.domain.model.ResultData
 import com.dhxxn17.domain.usecase.SaveSuccessImageUseCase
 import com.dhxxn17.domain.usecase.SendAllSelectDataUseCase
 import com.dhxxn17.domain.usecase.SwapUseCase
-import com.dhxxn17.ifourcut.common.ImageUtils
+import com.dhxxn17.ifourcut.common.bitmapToString
 import com.dhxxn17.ifourcut.ui.base.BaseUiAction
 import com.dhxxn17.ifourcut.ui.base.BaseUiState
 import com.dhxxn17.ifourcut.ui.base.BaseViewModel
@@ -66,7 +63,7 @@ class LoadingViewModel @Inject constructor(
 
         job = viewModelScope.launch {
             val data = sendAllSelectDataUseCase.invoke()
-            val image = data.myImage?.let { ImageUtils.bitmapToString(it) } ?: ""
+            val image = data.myImage?.let { bitmapToString(it) } ?: ""
             state.image.sendState { image }
 
             if (data.myImage != null && data.characterImage != null) {

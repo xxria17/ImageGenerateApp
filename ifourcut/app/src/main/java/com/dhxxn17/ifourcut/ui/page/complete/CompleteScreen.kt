@@ -1,21 +1,13 @@
 package com.dhxxn17.ifourcut.ui.page.complete
 
 import android.app.Activity
-import android.app.DownloadManager
-import android.content.ContentValues
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.net.Uri
-import android.os.Build
-import android.os.Environment
-import android.provider.MediaStore
-import android.util.Base64
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -36,11 +28,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
@@ -49,24 +37,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dhxxn17.ifourcut.R
+import com.dhxxn17.ifourcut.common.generateFileName
+import com.dhxxn17.ifourcut.common.saveBitmapImage
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
+import com.dhxxn17.ifourcut.ui.base.findActivity
 import com.dhxxn17.ifourcut.ui.navigation.Screens
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.OutputStream
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class CompleteScreen(
     private val navController: NavController,
@@ -158,7 +141,6 @@ class CompleteScreen(
                                     .value()
                                     ?.let {
                                         addLogoAndSave(context, it, R.drawable.aizac_logo)
-//                                        saveBitmapImage(it, context)
                                         Toast
                                             .makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT)
                                             .show()
@@ -244,76 +226,6 @@ class CompleteScreen(
         )
     }
 
-    fun Context.findActivity(): Activity {
-        var context = this
-        while (context is ContextWrapper) {
-            if (context is Activity) return context
-            context = context.baseContext
-        }
-        throw IllegalStateException("no activity")
-    }
-
-
-    private fun generateFileName(): String {
-        val timestamp = SimpleDateFormat("ddHHmm", Locale.getDefault()).format(Date())
-        val randomString = (1..6).map { ('a'..'z').random() }.joinToString("")
-        return "image_${timestamp}$randomString.png"
-    }
-
-    private fun saveBitmapImage(bitmap: Bitmap, context: Context) {
-        val timestamp = System.currentTimeMillis()
-        val contentResolver = context.findActivity().contentResolver
-        val values = ContentValues()
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-        values.put(MediaStore.Images.Media.DATE_ADDED, timestamp)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            values.put(MediaStore.Images.Media.DATE_TAKEN, timestamp)
-            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/" + generateFileName())
-            values.put(MediaStore.Images.Media.IS_PENDING, true)
-            val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-            if (uri != null) {
-                try {
-                    val outputStream = contentResolver.openOutputStream(uri)
-                    if (outputStream != null) {
-                        try {
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                            outputStream.close()
-                        } catch (e: Exception) {
-                            Log.e("CompleteScreen", "saveBitmapImage: ", e)
-                        }
-                    }
-                    values.put(MediaStore.Images.Media.IS_PENDING, false)
-                    contentResolver.update(uri, values, null, null)
-
-                } catch (e: Exception) {
-                    Log.e("CompleteScreen", "saveBitmapImage: ", e)
-                }
-            }
-        } else {
-            val imageFileFolder = File(
-                Environment.getExternalStorageDirectory().toString() + '/' + generateFileName()
-            )
-            if (!imageFileFolder.exists()) {
-                imageFileFolder.mkdirs()
-            }
-            val mImageName = "$timestamp.png"
-            val imageFile = File(imageFileFolder, mImageName)
-            try {
-                val outputStream: OutputStream = FileOutputStream(imageFile)
-                try {
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                    outputStream.close()
-                } catch (e: Exception) {
-                    Log.e("CompleteScreen", "saveBitmapImage: ", e)
-                }
-                values.put(MediaStore.Images.Media.DATA, imageFile.absolutePath)
-                contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-
-            } catch (e: Exception) {
-                Log.e("CompleteScreen", "saveBitmapImage: ", e)
-            }
-        }
-    }
     private fun addLogoAndSave(context: Context, imageBitmap: Bitmap, logoResId: Int) {
         val logoBitmap = BitmapFactory.decodeResource(context.resources, logoResId)
         val scaledLogo = Bitmap.createScaledBitmap(logoBitmap, 400, 120, false)

@@ -1,46 +1,60 @@
 package com.dhxxn17.ifourcut.ui.page.camera
 
 
-import android.graphics.Bitmap
-import android.util.Base64
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
-import java.io.ByteArrayOutputStream
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 
 class CameraScreen(
     private val navController: NavController
-): BaseScreen() {
+) : BaseScreen() {
 
+    @Composable
+    fun Effect(viewModel: CameraViewModel) {
+        LaunchedEffect(viewModel.effect) {
+            viewModel.effect.onEach { _effect ->
+                when (_effect) {
+                    is CameraContract.Effect.GoToCompleteScreen -> {
+                        navController.navigate(Screens.CameraCompleteScreen.route)
+                    }
+                }
+            }.collect()
+        }
+    }
 
     @Composable
     override fun CreateContent() {
-        val lifecycleOwner = LocalLifecycleOwner.current
+        val viewModel: CameraViewModel = hiltViewModel()
+
+        Effect(viewModel)
 
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .background(Color.White)
         ) {
-
-            CameraPreviewWithCaptureButton(
-                lifecycleOwner = lifecycleOwner,
-                onClickListener = { bitmap ->
-                    val baos = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-                    val byteArray = baos.toByteArray()
-                    val encoded = Base64.encodeToString(byteArray, Base64.DEFAULT)
-                    navController.navigate(Screens.LoadingScreen.route)
+            CameraScreen(
+                onBackController = {
+                    navController.popBackStack()
+                },
+                onCompleteController = { _bitmap ->
+                    viewModel.sendAction(CameraContract.Action.SaveImage(_bitmap))
                 }
             )
         }
-
     }
 
 

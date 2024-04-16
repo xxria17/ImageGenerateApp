@@ -48,7 +48,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dhxxn17.ifourcut.R
-import com.dhxxn17.ifourcut.common.ImageUtils
+import com.dhxxn17.ifourcut.common.uriToBitmap
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
 import kotlinx.coroutines.flow.onEach
@@ -68,7 +68,6 @@ class UploadScreen(
                     is UploadContract.Effect.GoToLoadingScreen -> {
                         navController.navigate(Screens.LoadingScreen.route)
                     }
-                    else -> {}
                 }
             }.collect()
         }
@@ -115,7 +114,7 @@ class UploadScreen(
             if (uri != null && !imageSelected.value) {
                 Toast.makeText(context, context.resources.getString(R.string.upload_toast), Toast.LENGTH_SHORT).show()
                 imageSelected.value = true
-                val imageBitmap = ImageUtils.uriToBitmap(context, uri)
+                val imageBitmap = uriToBitmap(context, uri)
                 viewModel.sendAction(UploadContract.Action.SelectImage(imageBitmap))
 
                 imageTypeByView = ImageTypeForView.Gallery
@@ -146,7 +145,8 @@ class UploadScreen(
             onResult = { isGranted: Boolean ->
                 if (isGranted) {
                     // 권한이 허용되었을 때의 처리 로직
-                    takePhotoFromCameraLauncher.launch()
+                    navController.navigate(Screens.CameraScreen.route)
+//                    takePhotoFromCameraLauncher.launch()
                 } else {
                     // 권한이 거부되었을 때의 처리 로직
                     Log.e("UploadScreen", "camera permission denied")
@@ -180,7 +180,8 @@ class UploadScreen(
                         // 권한이 없을 경우, 사용자에게 권한 요청
                         cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     } else {
-                        takePhotoFromCameraLauncher.launch()
+//                        takePhotoFromCameraLauncher.launch()
+                        navController.navigate(Screens.CameraScreen.route)
                     }
                     choosePicture.value = CHOOSE.NONE
                 }

@@ -21,4 +21,6 @@ sealed class Screens(val route: String) {
     }
 
     object CameraScreen: Screens("camera_screen")
+
+    object CameraCompleteScreen: Screens("camera_complete_screen")
 }
