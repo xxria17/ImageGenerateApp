@@ -78,16 +78,6 @@ class IntroScreen(
                 )
             )
 
-            Image(
-                painter = painterResource(id = R.drawable.aizac_logo),
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(20.dp)
-                    .align(Alignment.TopStart)
-                    .height(20.dp),
-                colorFilter = ColorFilter.tint(Color.White)
-            )
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -95,18 +85,20 @@ class IntroScreen(
                     .align(Alignment.BottomStart),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = stringResource(id = R.string.intro_title),
-                    style = Typography.titleLarge,
-                    color = Color.White
+                Image(
+                    painter = painterResource(id = R.drawable.aizac_logo),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .height(80.dp),
+                    colorFilter = ColorFilter.tint(Color.White)
                 )
 
                 Spacer(modifier = Modifier.height(5.dp))
 
                 Text(
-                    text = stringResource(id = R.string.intro_desc),
+                    text = stringResource(id = R.string.intro_title),
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                    fontSize = 18.sp,
+                    fontSize = 20.sp,
                     color = Color.White,
                     textAlign = TextAlign.Center
                 )
