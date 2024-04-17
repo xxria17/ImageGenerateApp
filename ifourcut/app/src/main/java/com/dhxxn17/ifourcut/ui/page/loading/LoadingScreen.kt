@@ -29,6 +29,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -185,20 +187,6 @@ class LoadingScreen(
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.background),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.matchParentSize()
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White.copy(alpha = 0.5f))
-            )
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -209,7 +197,7 @@ class LoadingScreen(
 
                 Text(
                     text = stringResource(id = R.string.loading_title),
-                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                     fontSize = 25.sp,
                     color = colorResource(id = R.color.main_black),
                     modifier = Modifier.align(Alignment.CenterHorizontally)

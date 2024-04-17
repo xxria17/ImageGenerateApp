@@ -20,11 +20,14 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,6 +37,8 @@ import coil.compose.rememberImagePainter
 import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
+import com.dhxxn17.ifourcut.ui.theme.Typography
+import com.dhxxn17.ifourcut.ui.theme.pretender
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -79,7 +84,8 @@ class IntroScreen(
                 modifier = Modifier
                     .padding(20.dp)
                     .align(Alignment.TopStart)
-                    .height(20.dp)
+                    .height(20.dp),
+                colorFilter = ColorFilter.tint(Color.White)
             )
 
             Column(
@@ -91,17 +97,16 @@ class IntroScreen(
             ) {
                 Text(
                     text = stringResource(id = R.string.intro_title),
-                    fontSize = 43.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.ExtraBold,
-
+                    style = Typography.titleLarge,
+                    color = Color.White
                 )
 
                 Spacer(modifier = Modifier.height(5.dp))
 
                 Text(
                     text = stringResource(id = R.string.intro_desc),
-                    fontSize = 20.sp,
+                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                    fontSize = 18.sp,
                     color = Color.White,
                     textAlign = TextAlign.Center
                 )
@@ -111,12 +116,12 @@ class IntroScreen(
                 Button(
                     onClick = {
                         navController.navigate(
-                            Screens.StartScreen.route
+                            Screens.ListScreen.route
                         )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(10.dp),
+                        .padding(start = 10.dp, end = 10.dp, bottom = 30.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White
                     ),
@@ -125,8 +130,7 @@ class IntroScreen(
                     Text(
                         text = stringResource(id = R.string.intro_next),
                         color = Color.Black,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
+                        style = Typography.bodyMedium,
                         modifier = Modifier.padding(10.dp)
                     )
                 }

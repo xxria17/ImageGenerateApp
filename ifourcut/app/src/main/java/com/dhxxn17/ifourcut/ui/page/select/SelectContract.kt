@@ -17,6 +17,10 @@ class SelectContract {
             val type: String,
             val image: Drawable
         ): Action()
+
+        data class SetType(
+            val type: String
+        ): Action()
     }
 
     sealed class Effect: BaseUiEffect {

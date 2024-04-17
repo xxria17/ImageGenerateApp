@@ -1,9 +1,11 @@
 package com.dhxxn17.ifourcut.ui.page.select
 
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.dhxxn17.domain.usecase.SelectCharacterDataUseCase
 import com.dhxxn17.ifourcut.R
+import com.dhxxn17.ifourcut.model.LIST_TYPE
 import com.dhxxn17.ifourcut.ui.base.BaseUiAction
 import com.dhxxn17.ifourcut.ui.base.BaseUiState
 import com.dhxxn17.ifourcut.ui.base.BaseViewModel
@@ -32,29 +34,6 @@ class SelectViewModel @Inject constructor(
     }
 
     override fun loadData() {
-        state.imageList.sendState {
-            arrayListOf<Int>(
-                R.drawable.select11,
-                R.drawable.select22,
-                R.drawable.select33,
-                R.drawable.select44,
-                R.drawable.select5,
-                R.drawable.select6,
-                R.drawable.select7,
-            )
-        }
-
-        state.nameList.sendState {
-            arrayListOf<String>(
-                "Snow white",
-                "Cinderella",
-                "Jasmine",
-                "Ariel",
-                "Spider-man",
-                "Superman",
-                "Captain America"
-            )
-        }
     }
 
     override fun initialData() {
@@ -67,6 +46,9 @@ class SelectViewModel @Inject constructor(
             is SelectContract.Action.SelectCharacter -> {
                 selectCharacter(action.type, action.image)
             }
+            is SelectContract.Action.SetType -> {
+                setType(action.type)
+            }
         }
     }
 
@@ -75,6 +57,48 @@ class SelectViewModel @Inject constructor(
             imageList = mutableCutStateListOf<Int>(emptyList()),
             nameList = mutableCutStateListOf(emptyList())
         )
+    }
+
+    private fun setType(type: String) {
+        Log.d("!!!!!!!!!", "type :: $type")
+        when (type) {
+            "{${LIST_TYPE.PRINCESS.name}}" -> {
+                state.imageList.sendState {
+                    arrayListOf<Int>(
+                        R.drawable.select11,
+                        R.drawable.select22,
+                        R.drawable.select33,
+                        R.drawable.select44
+                    )
+                }
+
+                state.nameList.sendState {
+                    arrayListOf<String>(
+                        "Snow white",
+                        "Cinderella",
+                        "Jasmine",
+                        "Ariel"
+                    )
+                }
+            }
+            "{${LIST_TYPE.HERO.name}}" -> {
+                state.imageList.sendState {
+                    arrayListOf<Int>(
+                        R.drawable.select5,
+                        R.drawable.select6,
+                        R.drawable.select7
+                    )
+                }
+
+                state.nameList.sendState {
+                    arrayListOf<String>(
+                        "Spider-man",
+                        "Superman",
+                        "Captain America"
+                    )
+                }
+            }
+        }
     }
 
     private fun selectCharacter(type: String, image: Drawable) {

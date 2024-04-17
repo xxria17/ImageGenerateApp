@@ -3,6 +3,7 @@ package com.dhxxn17.ifourcut.ui.page.upload
 import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
 import com.dhxxn17.domain.usecase.SelectUserDataUseCase
+import com.dhxxn17.domain.usecase.SendAllSelectDataUseCase
 import com.dhxxn17.ifourcut.ui.base.BaseUiAction
 import com.dhxxn17.ifourcut.ui.base.BaseUiState
 import com.dhxxn17.ifourcut.ui.base.BaseViewModel
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UploadViewModel @Inject constructor(
-    private val selectUseCase: SelectUserDataUseCase
+    private val selectUseCase: SelectUserDataUseCase,
+    private val sendAllSelectDataUseCase: SendAllSelectDataUseCase
 ): BaseViewModel() {
 
     val state: UploadContract.UploadState
@@ -31,6 +33,7 @@ class UploadViewModel @Inject constructor(
     }
 
     override fun loadData() {
+        getSelectedCharacter()
     }
 
     override fun initialData() {
@@ -55,7 +58,8 @@ class UploadViewModel @Inject constructor(
     override fun initialState(): BaseUiState {
         return UploadContract.UploadState(
             galleryImage = mutableCutStateOf(null),
-            cameraImage = mutableCutStateOf("")
+            cameraImage = mutableCutStateOf(""),
+            characterImage = mutableCutStateOf(null)
         )
     }
 
@@ -68,5 +72,15 @@ class UploadViewModel @Inject constructor(
             sendEffect(UploadContract.Effect.GoToLoadingScreen)
         }
 
+    }
+
+    private fun getSelectedCharacter() {
+        if (job != null && job?.isActive == true) return
+
+        job = viewModelScope.launch {
+
+            val data = sendAllSelectDataUseCase.invoke()
+            state.characterImage.sendState { data.characterImage }
+        }
     }
 }

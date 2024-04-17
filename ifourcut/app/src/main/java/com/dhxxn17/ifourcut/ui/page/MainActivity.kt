@@ -12,17 +12,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.dhxxn17.ifourcut.ui.navigation.Screens
+import com.dhxxn17.ifourcut.ui.navigation.TYPE_ARG
 import com.dhxxn17.ifourcut.ui.page.camera.CameraCompleteScreen
 import com.dhxxn17.ifourcut.ui.page.camera.CameraScreen
 import com.dhxxn17.ifourcut.ui.page.complete.CompleteScreen
 import com.dhxxn17.ifourcut.ui.page.intro.IntroScreen
+import com.dhxxn17.ifourcut.ui.page.list.ListScreen
 import com.dhxxn17.ifourcut.ui.page.loading.LoadingScreen
 import com.dhxxn17.ifourcut.ui.page.select.SelectScreen
-import com.dhxxn17.ifourcut.ui.page.start.StartScreen
+import com.dhxxn17.ifourcut.ui.page.start.hero.HeroScreen
+import com.dhxxn17.ifourcut.ui.page.start.princess.PrincessScreen
 import com.dhxxn17.ifourcut.ui.page.upload.UploadScreen
 import com.dhxxn17.ifourcut.ui.theme.IfourcutTheme
 import com.google.android.gms.ads.MobileAds
@@ -64,11 +69,27 @@ class MainActivity : ComponentActivity() {
                 IntroScreen(navController).CreateContent()
             }
 
-            composable(Screens.StartScreen.route) {
-                StartScreen(navController).CreateContent()
+            composable(Screens.ListScreen.route) {
+                ListScreen(navController).CreateContent()
             }
-            composable(Screens.SelectScreen.route) {
-                SelectScreen(navController).CreateContent()
+
+            composable(Screens.PrincessScreen.route) {
+                PrincessScreen(navController).CreateContent()
+            }
+            composable(Screens.HeroScreen.route) {
+                HeroScreen(navController).CreateContent()
+            }
+            composable(
+                route = Screens.SelectScreen.route,
+                arguments = listOf(
+                    navArgument(TYPE_ARG) {
+                        type = NavType.StringType
+                    }
+                )
+            ) { _backStackEntry ->
+                _backStackEntry.arguments?.getString(TYPE_ARG)?.let { _type ->
+                    SelectScreen(navController, _type).CreateContent()
+                }
             }
             composable(
                 route = Screens.UploadScreen.route

@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -34,12 +35,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,10 +53,12 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.dhxxn17.data.mapper.toBitmap
 import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.common.uriToBitmap
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
+import com.dhxxn17.ifourcut.ui.theme.Typography
 import kotlinx.coroutines.flow.onEach
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -210,44 +218,42 @@ class UploadScreen(
                 .fillMaxSize()
         ) {
             Image(
-                painter = painterResource(id = R.drawable.background),
+                painterResource(id = R.drawable.ic_back),
                 contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.matchParentSize()
-            )
-
-            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White.copy(alpha = 0.5f))
+                    .padding(12.dp)
+                    .size(30.dp)
+                    .clickable {
+                        navController.popBackStack()
+                    }
             )
 
             Column(
-                modifier = Modifier.fillMaxSize()
-                    .verticalScroll(scrollState)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painterResource(id = R.drawable.ic_back),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .size(30.dp)
-                        .clickable {
-                            navController.popBackStack()
-                        }
-                )
-
-                Spacer(modifier = Modifier.height(50.dp))
-
                 Text(
                     text = stringResource(id = R.string.upload_title),
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 25.sp,
+                    style = Typography.titleMedium,
                     color = colorResource(id = R.color.main_black),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(30.dp))
+
+                (viewModel.state.characterImage.value())?.toBitmap()?.asImageBitmap()?.let {
+                    Image(
+                        bitmap = it,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(100.dp)
+                            .clip(CircleShape)
+                    )
+                }
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Row(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -258,8 +264,8 @@ class UploadScreen(
                             .clickable {
                                 choosePicture.value = CHOOSE.CAMERA
                             }
-                            .background(Color.White.copy(alpha = 0.5f))
-                            .padding(50.dp),
+                            .background(colorResource(id = R.color.main_orange).copy(alpha = 0.2f))
+                            .padding(30.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
 
                     ) {
@@ -271,7 +277,8 @@ class UploadScreen(
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             text = stringResource(id = R.string.upload_camera),
-                            fontSize = 17.sp,
+                            fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                            fontSize = 16.sp,
                             color = colorResource(id = R.color.main_black)
                         )
                     }
@@ -283,8 +290,8 @@ class UploadScreen(
                             .clickable {
                                 choosePicture.value = CHOOSE.GALLERY
                             }
-                            .background(Color.White.copy(alpha = 0.5f))
-                            .padding(50.dp),
+                            .background(colorResource(id = R.color.main_orange).copy(alpha = 0.2f))
+                            .padding(30.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Image(
@@ -295,7 +302,8 @@ class UploadScreen(
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             text = stringResource(id = R.string.upload_gallery),
-                            fontSize = 17.sp,
+                            fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                            fontSize = 16.sp,
                             color = colorResource(id = R.color.main_black)
                         )
                     }
@@ -308,7 +316,7 @@ class UploadScreen(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .background(
-                            color = colorResource(id = R.color.main_pink),
+                            color = colorResource(id = R.color.main_orange),
                             shape = RoundedCornerShape(20.dp)
                         )
                 ) {
@@ -316,7 +324,7 @@ class UploadScreen(
                         text = "Tips",
                         color = Color.White,
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
                     )
                 }
@@ -327,7 +335,7 @@ class UploadScreen(
                     text = stringResource(id = R.string.upload_tip1),
                     color = colorResource(id = R.color.main_black),
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     textAlign = TextAlign.Center
                 )
@@ -337,7 +345,7 @@ class UploadScreen(
                     text = stringResource(id = R.string.upload_tip2),
                     color = colorResource(id = R.color.main_black),
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     textAlign = TextAlign.Center
                 )

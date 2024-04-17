@@ -1,5 +1,8 @@
 package com.dhxxn17.ifourcut.ui.page.select
 
+import android.app.Activity
+import android.os.Build
+import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,22 +16,29 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
 import com.dhxxn17.ifourcut.ui.page.CharItem
+import com.dhxxn17.ifourcut.ui.theme.Typography
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -36,7 +46,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.collect
 
 class SelectScreen(
-    private val navController: NavController
+    private val navController: NavController,
+    private val type: String
 ) : BaseScreen() {
 
     @Composable
@@ -56,47 +67,50 @@ class SelectScreen(
     @Composable
     override fun CreateContent() {
         val context = LocalContext.current
+        val view = LocalView.current
         val viewModel: SelectViewModel = hiltViewModel()
         val scrollState = rememberScrollState()
 
+        LaunchedEffect(Unit) {
+            viewModel.sendAction(SelectContract.Action.SetType(type))
+        }
+
         Effect(viewModel)
+
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = Color.White.toArgb()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+                windowInsetsController.isAppearanceLightStatusBars = true
+            } else {
+                // 이전 버전의 안드로이드에서는 이 방법을 사용
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
+        }
 
         Box(
             modifier = Modifier
                 .background(Color.White)
                 .fillMaxSize()
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.background),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.matchParentSize()
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White.copy(alpha = 0.5f))
-            )
             Column(
                 modifier = Modifier.verticalScroll(scrollState)
             ) {
                 Text(
                     text = stringResource(id = R.string.select_title),
-                    fontSize = 25.sp,
+                    fontFamily = FontFamily(Font(R.font.pretendard_extrabold)),
                     color = Color.Black,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(10.dp)
+                    fontSize = 25.sp,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 30.dp, bottom = 5.dp)
                 )
 
                 Text(
                     text = stringResource(id = R.string.select_description),
-                    fontSize = 18.sp,
+                    style = Typography.bodyMedium,
                     color = Color.Black,
-                    modifier = Modifier.padding(horizontal = 10.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
-
-                Spacer(modifier = Modifier.height(30.dp))
 
                 val pagerState = rememberPagerState()
 

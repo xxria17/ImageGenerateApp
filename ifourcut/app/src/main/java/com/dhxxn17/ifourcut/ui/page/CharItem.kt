@@ -38,8 +38,8 @@ fun CharItem(
             modifier = Modifier
                 .fillMaxHeight(0.9f)
                 .fillMaxWidth()
-                .padding(10.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .padding(32.dp)
+                .clip(RoundedCornerShape(20.dp))
                 .clickable {
                     onClick.invoke(imageUrl)
                 }
@@ -49,8 +49,8 @@ fun CharItem(
             modifier = Modifier
                 .fillMaxHeight(0.9f)
                 .fillMaxWidth()
-                .padding(10.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .padding(32.dp)
+                .clip(RoundedCornerShape(20.dp))
                 .background(Color.Black.copy(alpha = 0.1f))
         )
 
@@ -59,7 +59,7 @@ fun CharItem(
             fontSize = 23.sp,
             color = Color.White,
             fontWeight = FontWeight.ExtraBold,
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp)
+            modifier = Modifier.padding(horizontal = 40.dp, vertical = 30.dp)
                 .align(Alignment.BottomStart)
         )
 

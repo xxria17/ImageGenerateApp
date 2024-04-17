@@ -34,8 +34,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -88,19 +88,6 @@ class CompleteScreen(
                 .fillMaxSize(),
         ) {
 
-            Image(
-                painter = painterResource(id = R.drawable.background),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.matchParentSize()
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White.copy(alpha = 0.5f))
-            )
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -116,10 +103,10 @@ class CompleteScreen(
                 ) {
                     Box(
                         modifier = Modifier
-                            .background(color = Color.White.copy(alpha = 0.5f), shape = CircleShape)
+                            .background(color = Color.Black.copy(alpha = 0.2f), shape = CircleShape)
                             .clickable {
                                 navController.popBackStack(
-                                    Screens.StartScreen.route,
+                                    Screens.ListScreen.route,
                                     false
                                 )
                             }
@@ -140,7 +127,7 @@ class CompleteScreen(
 
                     Box(
                         modifier = Modifier
-                            .background(color = Color.White.copy(alpha = 0.5f), shape = CircleShape)
+                            .background(color = Color.Black.copy(alpha = 0.2f), shape = CircleShape)
                             .clickable {
                                 viewModel.state.image
                                     .value()
@@ -159,7 +146,6 @@ class CompleteScreen(
                             contentDescription = "",
                             modifier = Modifier
                                 .size(25.dp)
-
                         )
                     }
 
@@ -167,7 +153,7 @@ class CompleteScreen(
 
                     Box(
                         modifier = Modifier
-                            .background(color = Color.White.copy(alpha = 0.5f), shape = CircleShape)
+                            .background(color = Color.Black.copy(alpha = 0.2f), shape = CircleShape)
                             .clickable {
                                 viewModel.state.image
                                     .value()
@@ -183,7 +169,6 @@ class CompleteScreen(
                             contentDescription = "",
                             modifier = Modifier
                                 .size(25.dp)
-
                         )
                     }
                 }
