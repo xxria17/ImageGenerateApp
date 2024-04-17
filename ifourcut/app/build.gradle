@@ -22,6 +22,18 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        def localProperties = new Properties()
+        localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+        def admobAppId = localProperties.getProperty("ADMOB_APP_ID")
+        buildConfigField "String", "ADMOB_APP_ID", "\"${admobAppId}\""
+        buildConfigField "String", "ADMOB_AD_REWARD_ID", "\"${localProperties.getProperty("ADMOB_AD_REWARD_ID")}\""
+        buildConfigField "String", "ADMOB_AD_REWARD_ID_TEST", "\"${localProperties.getProperty("ADMOB_AD_REWARD_ID_TEST")}\""
+        buildConfigField "String", "ADMOB_AD_INTERSTITIAL_ID", "\"${localProperties.getProperty("ADMOB_AD_INTERSTITIAL_ID")}\""
+        buildConfigField "String", "ADMOB_AD_INTERSTITIAL_ID_TEST", "\"${localProperties.getProperty("ADMOB_AD_INTERSTITIAL_ID_TEST")}\""
+        buildConfigField "String", "ADMOB_AD_BANNER_ID", "\"${localProperties.getProperty("ADMOB_AD_BANNER_ID")}\""
+        buildConfigField "String", "ADMOB_AD_BANNER_ID_TEST", "\"${localProperties.getProperty("ADMOB_AD_BANNER_ID_TEST")}\""
+
+        manifestPlaceholders = [admobAppId:admobAppId]
     }
 
     buildTypes {
@@ -39,6 +51,7 @@ android {
     }
     buildFeatures {
         compose true
+        buildConfig true
     }
     composeOptions {
         kotlinCompilerExtensionVersion '1.4.8'
@@ -54,8 +67,6 @@ dependencies {
     implementation project(':data')
     implementation project(':domain')
 
-    implementation 'androidx.hilt:hilt-navigation-compose:1.2.0'
-
     implementation deps.kotlin
     implementation deps.lifecycle_runtime_ktx
     implementation deps.activity_compose
@@ -66,14 +77,24 @@ dependencies {
     implementation deps.compose.material3
     implementation deps.hilt.android
     kapt deps.hilt.compiler
+    implementation deps.hilt.navigation
     implementation deps.coil
     implementation deps.lifecycle_runtime_compose
     implementation deps.navigation_compose
     implementation deps.gson
     implementation deps.logger
+    implementation deps.camerax.core
+    implementation deps.camerax.camera2
+    implementation deps.camerax.lifecycle
+    implementation deps.camerax.video
+    implementation deps.camerax.view
+    implementation deps.camerax.mlkit
+    implementation deps.camerax.extensions
 
     debugImplementation deps.compose.ui_tooling
     debugImplementation deps.compose.ui_test_manifest
+
+    implementation 'com.google.android.gms:play-services-ads-lite:23.0.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -85,23 +106,7 @@ dependencies {
 
     implementation "com.google.accompanist:accompanist-pager-indicators:0.28.0"
     implementation "com.google.accompanist:accompanist-pager:0.28.0"
-
     implementation "com.google.accompanist:accompanist-permissions:0.35.0-alpha"
-
-    def camerax_version = "1.4.0-alpha04"
-    // The following line is optional, as the core library is included indirectly by camera-camera2
-    implementation "androidx.camera:camera-core:${camerax_version}"
-    implementation "androidx.camera:camera-camera2:${camerax_version}"
-    // If you want to additionally use the CameraX Lifecycle library
-    implementation "androidx.camera:camera-lifecycle:${camerax_version}"
-    // If you want to additionally use the CameraX VideoCapture library
-    implementation "androidx.camera:camera-video:${camerax_version}"
-    // If you want to additionally use the CameraX View class
-    implementation "androidx.camera:camera-view:${camerax_version}"
-    // If you want to additionally add CameraX ML Kit Vision Integration
-    implementation "androidx.camera:camera-mlkit-vision:${camerax_version}"
-    // If you want to additionally use the CameraX Extensions library
-    implementation "androidx.camera:camera-extensions:${camerax_version}"
 
     implementation "com.airbnb.android:lottie-compose:6.4.0"
 }

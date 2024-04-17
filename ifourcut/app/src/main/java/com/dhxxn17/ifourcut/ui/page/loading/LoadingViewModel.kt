@@ -10,6 +10,7 @@ import com.dhxxn17.ifourcut.common.bitmapToString
 import com.dhxxn17.ifourcut.ui.base.BaseUiAction
 import com.dhxxn17.ifourcut.ui.base.BaseUiState
 import com.dhxxn17.ifourcut.ui.base.BaseViewModel
+import com.google.android.gms.ads.rewarded.RewardedAd
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -42,6 +43,9 @@ class LoadingViewModel @Inject constructor(
 
     override fun initialData() {
         state.image.sendState { "" }
+        state.ad.sendState { null }
+        state.isCompleted.sendState { false }
+        state.isAdDone.sendState { false }
     }
 
     override fun handleEvents(action: BaseUiAction) {
@@ -49,13 +53,29 @@ class LoadingViewModel @Inject constructor(
             is LoadingContract.Action.JobCancel -> {
                 cancelRequest()
             }
+            is LoadingContract.Action.SetRewardedAd -> {
+                setInterstitialAd(action.ad)
+            }
+            is LoadingContract.Action.RequestSwap -> {
+                requestSwapImage()
+            }
+            is LoadingContract.Action.IsAdDone -> {
+                state.isAdDone.sendState { action.isDone }
+            }
         }
     }
 
     override fun initialState(): BaseUiState {
         return LoadingContract.LoadingState(
-            image = mutableCutStateOf("")
+            image = mutableCutStateOf(""),
+            ad = mutableCutStateOf(null),
+            isCompleted = mutableCutStateOf(false),
+            isAdDone = mutableCutStateOf(false)
         )
+    }
+
+    private fun setInterstitialAd(ad: RewardedAd?) {
+        state.ad.sendState { ad }
     }
 
     private fun requestSwapImage() {
@@ -77,7 +97,7 @@ class LoadingViewModel @Inject constructor(
                     response.data?.let { _data ->
                         saveSuccessImageUseCase.invoke(_data)
 
-                        sendEffect(LoadingContract.Effect.GoToComplete)
+                        state.isCompleted.sendState { true }
                     }
 
                 } else {

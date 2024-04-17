@@ -2,6 +2,7 @@ ext.deps = [:]
 
 def versions = [:]
 versions.hilt_version = '2.44'
+versions.hilt_compose_version = '1.2.0'
 versions.logger_version = '2.2.0'
 versions.kotlin_version = '1.9.0'
 versions.lifecycle_runtime_version = '2.6.2'
@@ -15,6 +16,7 @@ versions.retrofit_version = '2.9.0'
 versions.okhttp3_version = '4.11.0'
 versions.serialization_version = '1.5.0'
 versions.room_version = '2.5.1'
+versions.camerax_version = '1.4.0-alpha04'
 
 def deps = [:]
 
@@ -41,6 +43,7 @@ deps.compose = compose
 def hilt = [:]
 hilt.android = "com.google.dagger:hilt-android:$versions.hilt_version"
 hilt.compiler = "com.google.dagger:hilt-compiler:$versions.hilt_version"
+hilt.navigation = "androidx.hilt:hilt-navigation-compose:$versions.hilt_compose_version"
 deps.hilt = hilt
 
 def retrofit = [:]
@@ -60,5 +63,15 @@ room.runtime = "androidx.room:room-runtime:$versions.room_version"
 room.compiler = "androidx.room:room-compiler:$versions.room_version"
 room.ktx = "androidx.room:room-ktx:$versions.room_version"
 deps.room = room
+
+def camerax = [:]
+camerax.core = "androidx.camera:camera-core:$versions.camerax_version"
+camerax.camera2 = "androidx.camera:camera-camera2:$versions.camerax_version"
+camerax.lifecycle = "androidx.camera:camera-lifecycle:$versions.camerax_version"
+camerax.video = "androidx.camera:camera-video:$versions.camerax_version"
+camerax.view = "androidx.camera:camera-view:$versions.camerax_version"
+camerax.mlkit = "androidx.camera:camera-mlkit-vision:$versions.camerax_version"
+camerax.extensions = "androidx.camera:camera-extensions:$versions.camerax_version"
+deps.camerax = camerax
 
 ext.deps = deps

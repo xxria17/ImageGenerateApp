@@ -39,15 +39,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.dhxxn17.ifourcut.BuildConfig
 import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.common.generateFileName
 import com.dhxxn17.ifourcut.common.saveBitmapImage
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.base.findActivity
 import com.dhxxn17.ifourcut.ui.navigation.Screens
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import java.io.File
 import java.io.FileOutputStream
 
@@ -196,9 +201,30 @@ class CompleteScreen(
 
                 }
 
+                Spacer(modifier = Modifier.weight(1f))
+
+                BannersAds()
+
             }
         }
 
+    }
+
+    @Composable
+    fun BannersAds() {
+        AndroidView(
+            modifier = Modifier.fillMaxWidth(),
+            factory = { context ->
+                AdView(context).apply {
+                    setAdSize(AdSize.BANNER)
+                    adUnitId = BuildConfig.ADMOB_AD_BANNER_ID_TEST
+                    loadAd(AdRequest.Builder().build())
+                }
+            },
+            update = { adView ->
+                adView.loadAd(AdRequest.Builder().build())
+            }
+        )
     }
 
     private fun shareImage(bitmap: Bitmap, activity: Activity) {
