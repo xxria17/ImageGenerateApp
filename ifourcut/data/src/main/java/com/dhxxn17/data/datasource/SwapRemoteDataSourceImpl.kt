@@ -9,6 +9,8 @@ import com.dhxxn17.domain.model.ResultData
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 class SwapRemoteDataSourceImpl @Inject constructor(
@@ -24,15 +26,19 @@ class SwapRemoteDataSourceImpl @Inject constructor(
         val faceByteArray = faceImage.toByteArray()
         val poseByteArray = poseImage.toByteArray()
 
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val faceFileName = "face_img$timeStamp.png"
+        val poseFileName = "pose_img$timeStamp.png"
+
         val typePart = characterType.toRequestBody("text/plain".toMediaTypeOrNull())
 
         val faceRequestBody = faceByteArray.toRequestBody("image/png".toMediaTypeOrNull())
         val facePart =
-            MultipartBody.Part.createFormData("face_img", "face_image.png", faceRequestBody)
+            MultipartBody.Part.createFormData("face_img", faceFileName, faceRequestBody)
 
         val poseRequestBody = poseByteArray.toRequestBody("image/png".toMediaTypeOrNull())
         val posePart =
-            MultipartBody.Part.createFormData("pose_img", "pose_image.png", poseRequestBody)
+            MultipartBody.Part.createFormData("pose_img", poseFileName, poseRequestBody)
 
         return apiCall {
             swapApi.requestSwap(

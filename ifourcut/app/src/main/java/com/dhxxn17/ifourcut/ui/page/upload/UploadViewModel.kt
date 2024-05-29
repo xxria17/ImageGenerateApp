@@ -59,7 +59,7 @@ class UploadViewModel @Inject constructor(
         return UploadContract.UploadState(
             galleryImage = mutableCutStateOf(null),
             cameraImage = mutableCutStateOf(""),
-            characterImage = mutableCutStateOf(null)
+            characterImage = mutableCutStateOf(null),
         )
     }
 
@@ -71,7 +71,6 @@ class UploadViewModel @Inject constructor(
 
             sendEffect(UploadContract.Effect.GoToLoadingScreen)
         }
-
     }
 
     private fun getSelectedCharacter() {

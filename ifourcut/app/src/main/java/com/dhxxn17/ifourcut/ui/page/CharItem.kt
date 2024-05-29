@@ -30,39 +30,35 @@ fun CharItem(
     name: String,
     onClick: (Int) -> Unit
 ) {
-    Box() {
+    Box(
+        modifier = Modifier
+            .fillMaxHeight()
+            .clickable { onClick.invoke(imageUrl) }
+            .padding(horizontal = 16.dp)
+            .clip(RoundedCornerShape(20.dp))
+
+    ) {
         Image(
             painter = painterResource(imageUrl),
             contentDescription = "",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .fillMaxHeight(0.9f)
+                .fillMaxHeight()
                 .fillMaxWidth()
-                .padding(32.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .clickable {
-                    onClick.invoke(imageUrl)
-                }
         )
-
         Box(
             modifier = Modifier
-                .fillMaxHeight(0.9f)
-                .fillMaxWidth()
-                .padding(32.dp)
-                .clip(RoundedCornerShape(20.dp))
+                .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.1f))
         )
-
         Text(
             text = name,
             fontSize = 23.sp,
             color = Color.White,
             fontWeight = FontWeight.ExtraBold,
-            modifier = Modifier.padding(horizontal = 40.dp, vertical = 30.dp)
+            modifier = Modifier
                 .align(Alignment.BottomStart)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
         )
-
     }
-
 }

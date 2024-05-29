@@ -36,6 +36,7 @@ class CompleteViewModel @Inject constructor(
 
     override fun initialData() {
         state.image.sendState { null }
+        state.originFaceImg.sendState { null }
     }
 
     override fun handleEvents(action: BaseUiAction) {
@@ -48,13 +49,15 @@ class CompleteViewModel @Inject constructor(
         job = viewModelScope.launch {
             val data = useCase.invoke()
             val bitmap = BitmapFactory.decodeByteArray(data.completeImage, 0, data.completeImage?.size?:0)
+            state.originFaceImg.sendState { data.myImage }
             state.image.sendState { bitmap }
         }
     }
 
     override fun initialState(): BaseUiState {
         return CompleteContract.CompleteState(
-            image = mutableCutStateOf(null)
+            image = mutableCutStateOf(null),
+            originFaceImg = mutableCutStateOf(null)
         )
     }
 }

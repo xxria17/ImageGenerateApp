@@ -115,7 +115,7 @@ class PrincessScreen(
                 Image(
                     painter = painterResource(id = R.drawable.complete),
                     contentDescription = null,
-                    modifier = Modifier.size(250.dp)
+                    modifier = Modifier.size(350.dp)
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -128,7 +128,7 @@ class PrincessScreen(
                     Image(
                         painter = painterResource(id = R.drawable.face1),
                         contentDescription = null,
-                        modifier = Modifier.size(70.dp)
+                        modifier = Modifier.size(90.dp)
                     )
 
                     Spacer(modifier = Modifier.width(10.dp))
@@ -136,7 +136,7 @@ class PrincessScreen(
                     Image(
                         painter = painterResource(id = R.drawable.heart),
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(30.dp),
                         colorFilter = ColorFilter.tint(Color.White)
                     )
 
@@ -145,7 +145,7 @@ class PrincessScreen(
                     Image(
                         painter = painterResource(id = R.drawable.ref2),
                         contentDescription = null,
-                        modifier = Modifier.size(70.dp)
+                        modifier = Modifier.size(90.dp)
                     )
                 }
 

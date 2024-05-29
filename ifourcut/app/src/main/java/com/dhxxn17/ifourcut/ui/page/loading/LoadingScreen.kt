@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -90,64 +92,64 @@ class LoadingScreen(
 
         Effect(viewModel)
 
-        // 광고 객체 초기화
-        LaunchedEffect(Unit) {
-            adRequest = AdRequest.Builder().build()
-
-            adRequest?.let {
-                RewardedAd.load(
-                    context,
-                    BuildConfig.ADMOB_AD_REWARD_ID_TEST,
-                    it,
-                    object : RewardedAdLoadCallback() {
-                        override fun onAdFailedToLoad(adError: LoadAdError) {
-                            Log.e(TAG, "$adError")
-                            viewModel.sendAction(LoadingContract.Action.SetRewardedAd(null))
-                        }
-
-                        override fun onAdLoaded(rewardedAd: RewardedAd) {
-                            Log.d(TAG, "Ad was loaded.")
-                            viewModel.sendAction(LoadingContract.Action.SetRewardedAd(rewardedAd))
-                        }
-                    })
-            }
-
-        }
-
-
-        LaunchedEffect(viewModel.state.ad.value()) {
-            viewModel.state.ad.value()?.fullScreenContentCallback =
-                object : FullScreenContentCallback() {
-                    override fun onAdDismissedFullScreenContent() {
-                        // 보상형 광고가 닫힐 때
-                        Log.d(TAG, "Ad dismissed fullscreen content.")
-                        viewModel.sendAction(LoadingContract.Action.SetRewardedAd(null))
-                    }
-
-                    override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                        // 광고 표시에 실패한 경우
-                        Log.e(TAG, "onAdFailedToShowFullScreenContent error : $p0")
-                        viewModel.sendAction(LoadingContract.Action.SetRewardedAd(null))
-                        Toast.makeText(context, "다시 시도해주세요", Toast.LENGTH_SHORT).show()
-                        navController.popBackStack()
-                    }
-                }
+//        // 광고 객체 초기화
+//        LaunchedEffect(Unit) {
+//            adRequest = AdRequest.Builder().build()
+//
+//            adRequest?.let {
+//                RewardedAd.load(
+//                    context,
+//                    BuildConfig.ADMOB_AD_REWARD_ID_TEST,
+//                    it,
+//                    object : RewardedAdLoadCallback() {
+//                        override fun onAdFailedToLoad(adError: LoadAdError) {
+//                            Log.e(TAG, "$adError")
+//                            viewModel.sendAction(LoadingContract.Action.SetRewardedAd(null))
+//                        }
+//
+//                        override fun onAdLoaded(rewardedAd: RewardedAd) {
+//                            Log.d(TAG, "Ad was loaded.")
+//                            viewModel.sendAction(LoadingContract.Action.SetRewardedAd(rewardedAd))
+//                        }
+//                    })
+//            }
+//
+//        }
 
 
-            viewModel.state.ad.value()?.let { ad ->
-                ad.show(context.findActivity(), OnUserEarnedRewardListener { rewardItem ->
-                    val rewardAmount = rewardItem.amount
-                    val rewardType = rewardItem.type
-                    viewModel.sendAction(LoadingContract.Action.IsAdDone(true))
-                    Log.d(TAG, "User earned the reward.")
-                })
-            } ?: run {
-                Log.d(TAG, "The rewarded ad wasn't ready yet.")
-            }
-        }
+//        LaunchedEffect(viewModel.state.ad.value()) {
+//            viewModel.state.ad.value()?.fullScreenContentCallback =
+//                object : FullScreenContentCallback() {
+//                    override fun onAdDismissedFullScreenContent() {
+//                        // 보상형 광고가 닫힐 때
+//                        Log.d(TAG, "Ad dismissed fullscreen content.")
+//                        viewModel.sendAction(LoadingContract.Action.SetRewardedAd(null))
+//                    }
+//
+//                    override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+//                        // 광고 표시에 실패한 경우
+//                        Log.e(TAG, "onAdFailedToShowFullScreenContent error : $p0")
+//                        viewModel.sendAction(LoadingContract.Action.SetRewardedAd(null))
+//                        Toast.makeText(context, "다시 시도해주세요", Toast.LENGTH_SHORT).show()
+//                        navController.popBackStack()
+//                    }
+//                }
+//
+//
+//            viewModel.state.ad.value()?.let { ad ->
+//                ad.show(context.findActivity(), OnUserEarnedRewardListener { rewardItem ->
+//                    val rewardAmount = rewardItem.amount
+//                    val rewardType = rewardItem.type
+//                    viewModel.sendAction(LoadingContract.Action.IsAdDone(true))
+//                    Log.d(TAG, "User earned the reward.")
+//                })
+//            } ?: run {
+//                Log.d(TAG, "The rewarded ad wasn't ready yet.")
+//            }
+//        }
 
         val composition by rememberLottieComposition(
-            LottieCompositionSpec.RawRes(R.raw.loading_anim)
+            LottieCompositionSpec.RawRes(R.raw.loading)
         )
         val lottieAnimatable = rememberLottieAnimatable()
 
@@ -175,8 +177,8 @@ class LoadingScreen(
             }
         }
 
-        LaunchedEffect(viewModel.state.isCompleted.value(), viewModel.state.isAdDone.value()) {
-            if (viewModel.state.isCompleted.value() && viewModel.state.isAdDone.value()) {
+        LaunchedEffect(viewModel.state.isCompleted.value()) {
+            if (viewModel.state.isCompleted.value()) {
                 navController.navigate(Screens.CompleteScreen.route)
             }
         }
@@ -190,10 +192,9 @@ class LoadingScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(scrollState)
+                    .verticalScroll(scrollState),
+                verticalArrangement = Arrangement.Center
             ) {
-
-                Spacer(modifier = Modifier.height(80.dp))
 
                 Text(
                     text = stringResource(id = R.string.loading_title),
@@ -214,7 +215,7 @@ class LoadingScreen(
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .padding(20.dp)
-                                .aspectRatio(1f)
+                                .size(300.dp)
                                 .clip(RoundedCornerShape(12.dp))
                         )
 
@@ -223,7 +224,7 @@ class LoadingScreen(
                             progress = { progress },
                             contentScale = ContentScale.Fit,
                             modifier = Modifier
-                                .aspectRatio(1f)
+
                         )
                     }
                 }

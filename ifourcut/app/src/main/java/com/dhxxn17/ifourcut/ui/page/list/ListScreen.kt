@@ -72,11 +72,11 @@ class ListScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                Image(
-                    painter = painterResource(id = R.drawable.ic_my),
-                    contentDescription = null,
-                    modifier = Modifier.size(30.dp)
-                )
+//                Image(
+//                    painter = painterResource(id = R.drawable.ic_my),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(30.dp)
+//                )
             }
 
             LazyColumn (

@@ -29,12 +29,15 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -44,6 +47,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.materialIcon
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -61,6 +65,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -94,6 +99,10 @@ fun CameraScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val imageCapture = remember { ImageCapture.Builder().build() }
     val isLoading = remember { mutableStateOf(false) }
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
+    val ripple = rememberRipple(bounded = false)
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -110,13 +119,16 @@ fun CameraScreen(
                 painterResource(id = R.drawable.ic_back),
                 contentDescription = null,
                 modifier = Modifier
-                    .padding(12.dp)
-                    .size(30.dp)
+                    .size(45.dp)
+                    .indication(interactionSource, ripple)
                     .clickable {
                         onBackController.invoke()
                     }
             )
         }
+
+        Spacer(Modifier.weight(1f))
+
         Box(
             modifier = Modifier
                 .height(500.dp)
@@ -130,55 +142,56 @@ fun CameraScreen(
                 imageCapture = imageCapture
             )
 
-            Image(
-                painter = painterResource(id = R.drawable.guide),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.FillHeight
-            )
+//            Image(
+//                painter = painterResource(id = R.drawable.guide),
+//                contentDescription = null,
+//                modifier = Modifier.fillMaxSize(),
+//                contentScale = ContentScale.FillHeight
+//            )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Box(
+        Row(
             modifier = Modifier
-                .weight(2f)
                 .fillMaxWidth()
-                .background(color = Color.White)
+                .weight(2f)
+                .background(Color.White)
                 .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+
+            Spacer(modifier = Modifier.size(80.dp))
+            val haptic = LocalHapticFeedback.current
+            if (isLoading.value) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterVertically))
+            } else {
+                Image(
+                    painterResource(id = R.drawable.ic_pic),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .indication(interactionSource, ripple)
+                        .clickable {
+                            haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                            isLoading.value = true
+                            takePhoto(imageCapture, context, onSuccessListener = {
+                                onCompleteController.invoke(it)
+                            })
+                        },
+                )
+            }
+
             Image(
-                painterResource(id = R.drawable.ic_trans),
+                painterResource(id = R.drawable.ic_turn),
                 contentDescription = null,
                 modifier = Modifier
-                    .padding(12.dp)
-                    .size(35.dp)
+                    .size(80.dp)
+                    .indication(interactionSource, ripple)
                     .clickable {
                         lensFacing =
                             if (lensFacing == CameraSelector.LENS_FACING_BACK) CameraSelector.LENS_FACING_FRONT else CameraSelector.LENS_FACING_BACK
                     }
             )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                if (isLoading.value) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterVertically))
-                } else {
-                    Image(
-                        painterResource(id = R.drawable.ic_pic),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .size(50.dp)
-                            .clickable {
-                                isLoading.value = true
-                                takePhoto(imageCapture, context, onSuccessListener = {
-                                    onCompleteController.invoke(it)
-                                })
-                            },
-                    )
-                }
-            }
 
         }
     }

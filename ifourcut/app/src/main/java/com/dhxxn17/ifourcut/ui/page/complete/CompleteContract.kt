@@ -8,7 +8,9 @@ import com.dhxxn17.ifourcut.ui.base.CutState
 
 class CompleteContract {
     data class CompleteState(
-        val image: CutState<Bitmap?>
+        val image: CutState<Bitmap?>,
+        val originFaceImg: CutState<Bitmap?>,
+
     ): BaseUiState
 
     sealed class Action: BaseUiAction {}

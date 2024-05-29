@@ -117,7 +117,7 @@ class HeroScreen(
                     painter = painterResource(id = R.drawable.list_img2),
                     contentDescription = null,
                     modifier = Modifier
-                        .height(200.dp)
+                        .height(300.dp)
                         .aspectRatio(1f),
                     contentScale = ContentScale.Crop
                 )
@@ -132,7 +132,7 @@ class HeroScreen(
                     Image(
                         painter = painterResource(id = R.drawable.face2),
                         contentDescription = null,
-                        modifier = Modifier.size(70.dp),
+                        modifier = Modifier.size(90.dp),
                         contentScale = ContentScale.Crop
                     )
 
@@ -141,7 +141,7 @@ class HeroScreen(
                     Image(
                         painter = painterResource(id = R.drawable.heart),
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(30.dp),
                         colorFilter = ColorFilter.tint(Color.White)
                     )
 
@@ -150,7 +150,7 @@ class HeroScreen(
                     Image(
                         painter = painterResource(id = R.drawable.select7),
                         contentDescription = null,
-                        modifier = Modifier.size(70.dp),
+                        modifier = Modifier.size(90.dp),
                         contentScale = ContentScale.Crop
                     )
                 }

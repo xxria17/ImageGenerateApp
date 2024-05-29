@@ -102,8 +102,12 @@ class LoadingViewModel @Inject constructor(
 
                 } else {
                     sendEffect(LoadingContract.Effect.RequestFail)
-                    Log.e("LoadingViewModel", "$response.message ")
+                    if (response is ResultData.Error) {
+                        Log.e("LoadingViewModel", "${response.errorData}")
+                    }
                 }
+            } else {
+                Log.e("LoadingViewModel", "images all null")
             }
         }
     }

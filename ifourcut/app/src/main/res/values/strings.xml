@@ -18,7 +18,7 @@
     <string name="upload_tip1">아래 기준에 맞는 사진을 업로드하면\n더욱 자연스러운 결과를 얻을 수 있어요.</string>
     <string name="upload_tip2">- 정면에서 촬영된 사진\n- 이마가 잘 보이는 사진\n- 안경을 벗은 사진</string>
 
-    <string name="loading_title">잠시만 기다려주세요</string>
+    <string name="loading_title">변환중입니다</string>
 
     <string name="complete_save">저장하기</string>
     <string name="complete_share">공유하기</string>

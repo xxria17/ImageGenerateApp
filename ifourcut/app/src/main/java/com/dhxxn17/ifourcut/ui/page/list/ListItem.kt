@@ -46,7 +46,7 @@ fun ListItem(
             Image(
                 painter = painterResource(id = image),
                 contentDescription = null,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxSize()
                     .clip(RoundedCornerShape(16.dp)),
                 contentScale = ContentScale.Crop,
             )

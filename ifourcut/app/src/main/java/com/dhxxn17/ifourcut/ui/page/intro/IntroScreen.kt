@@ -89,8 +89,7 @@ class IntroScreen(
                     painter = painterResource(id = R.drawable.aizac_logo),
                     contentDescription = "",
                     modifier = Modifier
-                        .height(80.dp),
-                    colorFilter = ColorFilter.tint(Color.White)
+                        .height(80.dp)
                 )
 
                 Spacer(modifier = Modifier.height(5.dp))

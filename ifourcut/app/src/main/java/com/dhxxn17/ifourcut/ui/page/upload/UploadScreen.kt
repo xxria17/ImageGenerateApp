@@ -3,7 +3,13 @@ package com.dhxxn17.ifourcut.ui.page.upload
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.Matrix
+import android.media.ExifInterface
+import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -12,6 +18,8 @@ import androidx.activity.result.launch
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +34,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -72,7 +82,7 @@ class UploadScreen(
     fun Effect(viewModel: UploadViewModel) {
         LaunchedEffect(viewModel.effect) {
             viewModel.effect.onEach { _effect ->
-                when(_effect) {
+                when (_effect) {
                     is UploadContract.Effect.GoToLoadingScreen -> {
                         navController.navigate(Screens.LoadingScreen.route)
                     }
@@ -104,11 +114,13 @@ class UploadScreen(
                         Manifest.permission.READ_MEDIA_IMAGES
                     )
                 }
+
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> {
                     arrayOf(
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                     )
                 }
+
                 else -> {
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                 }
@@ -120,10 +132,18 @@ class UploadScreen(
             contract = ActivityResultContracts.GetContent()
         ) { uri ->
             if (uri != null && !imageSelected.value) {
-                Toast.makeText(context, context.resources.getString(R.string.upload_toast), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.resources.getString(R.string.upload_toast),
+                    Toast.LENGTH_SHORT
+                ).show()
                 imageSelected.value = true
                 val imageBitmap = uriToBitmap(context, uri)
-                viewModel.sendAction(UploadContract.Action.SelectImage(imageBitmap))
+                imageBitmap?.let {
+                    val rotatedBitmap = rotateBitmapIfRequired(context, uri, imageBitmap)
+                    viewModel.sendAction(UploadContract.Action.SelectImage(rotatedBitmap))
+                }
+
 
                 imageTypeByView = ImageTypeForView.Gallery
                 imageSelected.value = false
@@ -197,10 +217,14 @@ class UploadScreen(
                 CHOOSE.GALLERY -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         getPhotoFromGalleryLauncher.launch("image/*")
-                    }else {
-                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    } else {
+                        if (ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                            ) != PackageManager.PERMISSION_GRANTED
+                        ) {
                             requestMultiplePermissionsLauncher.launch(permissionsToRequest)
-                        }else{
+                        } else {
                             getPhotoFromGalleryLauncher.launch("image/*")
                         }
                     }
@@ -210,6 +234,11 @@ class UploadScreen(
                 else -> {}
             }
         }
+
+        val interactionSource = remember {
+            MutableInteractionSource()
+        }
+        val ripple = rememberRipple(bounded = false)
 
 
         Box(
@@ -222,7 +251,8 @@ class UploadScreen(
                 contentDescription = null,
                 modifier = Modifier
                     .padding(12.dp)
-                    .size(30.dp)
+                    .size(50.dp)
+                    .indication(interactionSource, ripple)
                     .clickable {
                         navController.popBackStack()
                     }
@@ -249,7 +279,8 @@ class UploadScreen(
                         bitmap = it,
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(100.dp)
+                        modifier = Modifier
+                            .size(100.dp)
                             .clip(CircleShape)
                     )
                 }
@@ -353,6 +384,42 @@ class UploadScreen(
         }
 
 
+    }
+
+    private fun rotateBitmapIfRequired(context: Context, uri: Uri, bitmap: Bitmap): Bitmap {
+        val realPath = getRealPathFromUri(context, uri)
+        realPath?.let {
+            val exif = ExifInterface(it)
+            val orientation = exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )
+
+            return when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90)
+                ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180)
+                ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270)
+                else -> bitmap
+            }
+        }
+        return bitmap
+    }
+
+    fun getRealPathFromUri(context: Context, uri: Uri): String? {
+        var realPath: String? = null
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor: Cursor? = context.contentResolver.query(uri, projection, null, null, null)
+        cursor?.use {
+            val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            it.moveToFirst()
+            realPath = it.getString(columnIndex)
+        }
+        return realPath
+    }
+
+    private fun rotateBitmap(bitmap: Bitmap, degree: Int): Bitmap {
+        val matrix = Matrix().apply { postRotate(degree.toFloat()) }
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 }
 

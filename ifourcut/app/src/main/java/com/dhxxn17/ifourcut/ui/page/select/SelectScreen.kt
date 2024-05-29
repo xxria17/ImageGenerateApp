@@ -5,10 +5,13 @@ import android.os.Build
 import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -17,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -95,47 +99,62 @@ class SelectScreen(
                 .fillMaxSize()
         ) {
             Column(
-                modifier = Modifier.verticalScroll(scrollState)
+                modifier = Modifier
+                    .fillMaxSize().verticalScroll(scrollState)
             ) {
-                Text(
-                    text = stringResource(id = R.string.select_title),
-                    fontFamily = FontFamily(Font(R.font.pretendard_extrabold)),
-                    color = Color.Black,
-                    fontSize = 25.sp,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 30.dp, bottom = 5.dp)
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Text(
+                        text = stringResource(id = R.string.select_title),
+                        fontFamily = FontFamily(Font(R.font.pretendard_extrabold)),
+                        color = Color.Black,
+                        fontSize = 25.sp,
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 50.dp, bottom = 5.dp)
+                    )
 
-                Text(
-                    text = stringResource(id = R.string.select_description),
-                    style = Typography.bodyMedium,
-                    color = Color.Black,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+                    Text(
+                        text = stringResource(id = R.string.select_description),
+                        style = Typography.bodyMedium,
+                        color = Color.Black,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
 
                 val pagerState = rememberPagerState()
 
-                HorizontalPager(
-                    count = viewModel.state.imageList.value().size,
-                    state = pagerState
-                ) { page ->
-                    val name = viewModel.state.nameList.value()[page]
-                    CharItem(
-                        imageUrl = viewModel.state.imageList.value()[page],
-                        onClick = { _imageId ->
-                            ContextCompat.getDrawable(context, _imageId)?.let {
-                                viewModel.sendAction(
-                                    SelectContract.Action.SelectCharacter(
-                                        type = name,
-                                        image = it
+                Spacer(Modifier.weight(1f))
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    HorizontalPager(
+                        count = viewModel.state.imageList.value().size,
+                        state = pagerState,
+                        contentPadding = PaddingValues(horizontal = 54.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) { page ->
+                        val name = viewModel.state.nameList.value()[page]
+                        CharItem(
+                            imageUrl =  viewModel.state.imageList.value()[page],
+                            name = name,
+                            onClick = {_imageId ->
+                                ContextCompat.getDrawable(context, _imageId)?.let {
+                                    viewModel.sendAction(
+                                        SelectContract.Action.SelectCharacter(
+                                            type = name,
+                                            image = it
+                                        )
                                     )
-                                )
+                                }
                             }
-
-                        },
-                        name = name
-                    )
-
+                        )
+                    }
                 }
+
+                Spacer(Modifier.weight(1f))
             }
         }
 

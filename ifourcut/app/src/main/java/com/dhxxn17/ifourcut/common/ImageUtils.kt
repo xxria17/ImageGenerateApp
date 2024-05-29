@@ -13,6 +13,7 @@ import android.util.Log
 import com.dhxxn17.ifourcut.ui.base.findActivity
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.OutputStream
 
@@ -26,8 +27,15 @@ fun convertDrawableToBase64String(context: Context, drawableId: Int): String {
     return Base64.encodeToString(byteArray, Base64.DEFAULT)
 }
 
-fun uriToBitmap(context: Context, uri: Uri): Bitmap {
-    return MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+fun uriToBitmap(context: Context, uri: Uri): Bitmap? {
+//    return MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+    return try {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        BitmapFactory.decodeStream(inputStream)
+    } catch (e: FileNotFoundException) {
+        e.printStackTrace()
+        null
+    }
 }
 
 fun bitmapToString(bitmap: Bitmap): String {
