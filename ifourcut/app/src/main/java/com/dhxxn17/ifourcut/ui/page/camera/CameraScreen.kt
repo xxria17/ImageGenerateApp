@@ -41,7 +41,7 @@ class CameraScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(Color.Black)
         ) {
             CameraScreen(
                 onBackController = {

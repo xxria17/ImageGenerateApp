@@ -11,7 +11,5 @@ interface SelectRepository {
     suspend fun saveCharacterData(type: String, image: Drawable)
     suspend fun saveUserImage(myImage: Bitmap)
     suspend fun getAllData(): Flow<SelectedData>
-
     suspend fun saveCompleteImage(image: ByteArray?)
-
 }

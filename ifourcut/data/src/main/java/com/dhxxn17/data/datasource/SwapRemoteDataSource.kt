@@ -11,4 +11,9 @@ interface SwapRemoteDataSource {
         faceImage: Bitmap,
         poseImage: Drawable
     ): ResultData<ByteArray?>
+
+    suspend fun requestQR(
+        resultImage: Bitmap
+    ): ResultData<ByteArray?>
+
 }

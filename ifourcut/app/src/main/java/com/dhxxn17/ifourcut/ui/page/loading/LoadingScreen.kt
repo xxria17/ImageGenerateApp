@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -51,13 +54,6 @@ import com.dhxxn17.ifourcut.common.stringToBitmap
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.base.findActivity
 import com.dhxxn17.ifourcut.ui.navigation.Screens
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.OnUserEarnedRewardListener
-import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
@@ -88,65 +84,8 @@ class LoadingScreen(
         val viewModel: LoadingViewModel = hiltViewModel()
         val scrollState = rememberScrollState()
         val context = LocalContext.current
-        var adRequest : AdRequest? = null
 
         Effect(viewModel)
-
-//        // 광고 객체 초기화
-//        LaunchedEffect(Unit) {
-//            adRequest = AdRequest.Builder().build()
-//
-//            adRequest?.let {
-//                RewardedAd.load(
-//                    context,
-//                    BuildConfig.ADMOB_AD_REWARD_ID_TEST,
-//                    it,
-//                    object : RewardedAdLoadCallback() {
-//                        override fun onAdFailedToLoad(adError: LoadAdError) {
-//                            Log.e(TAG, "$adError")
-//                            viewModel.sendAction(LoadingContract.Action.SetRewardedAd(null))
-//                        }
-//
-//                        override fun onAdLoaded(rewardedAd: RewardedAd) {
-//                            Log.d(TAG, "Ad was loaded.")
-//                            viewModel.sendAction(LoadingContract.Action.SetRewardedAd(rewardedAd))
-//                        }
-//                    })
-//            }
-//
-//        }
-
-
-//        LaunchedEffect(viewModel.state.ad.value()) {
-//            viewModel.state.ad.value()?.fullScreenContentCallback =
-//                object : FullScreenContentCallback() {
-//                    override fun onAdDismissedFullScreenContent() {
-//                        // 보상형 광고가 닫힐 때
-//                        Log.d(TAG, "Ad dismissed fullscreen content.")
-//                        viewModel.sendAction(LoadingContract.Action.SetRewardedAd(null))
-//                    }
-//
-//                    override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-//                        // 광고 표시에 실패한 경우
-//                        Log.e(TAG, "onAdFailedToShowFullScreenContent error : $p0")
-//                        viewModel.sendAction(LoadingContract.Action.SetRewardedAd(null))
-//                        Toast.makeText(context, "다시 시도해주세요", Toast.LENGTH_SHORT).show()
-//                        navController.popBackStack()
-//                    }
-//                }
-//
-//
-//            viewModel.state.ad.value()?.let { ad ->
-//                ad.show(context.findActivity(), OnUserEarnedRewardListener { rewardItem ->
-//                    val rewardAmount = rewardItem.amount
-//                    val rewardType = rewardItem.type
-//                    viewModel.sendAction(LoadingContract.Action.IsAdDone(true))
-//                    Log.d(TAG, "User earned the reward.")
-//                })
-//            } ?: run {
-//                Log.d(TAG, "The rewarded ad wasn't ready yet.")
-//            }
-//        }
 
         val composition by rememberLottieComposition(
             LottieCompositionSpec.RawRes(R.raw.loading)
@@ -162,7 +101,6 @@ class LoadingScreen(
             restartOnPlay = false
         )
 
-
         LaunchedEffect(composition) {
             lottieAnimatable.animate(
                 composition = composition,
@@ -171,18 +109,11 @@ class LoadingScreen(
             )
         }
 
-        DisposableEffect(Unit) {
-            onDispose {
-                viewModel.sendAction(LoadingContract.Action.JobCancel)
-            }
-        }
-
         LaunchedEffect(viewModel.state.isCompleted.value()) {
             if (viewModel.state.isCompleted.value()) {
                 navController.navigate(Screens.CompleteScreen.route)
             }
         }
-
 
         Box(
             modifier = Modifier
@@ -199,40 +130,37 @@ class LoadingScreen(
                 Text(
                     text = stringResource(id = R.string.loading_title),
                     fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-                    fontSize = 25.sp,
+                    fontSize = 55.sp,
                     color = colorResource(id = R.color.main_black),
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(bottom = 100.dp)
                 )
 
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (viewModel.state.image.value().isNotEmpty()) {
-                        Image(
-                            bitmap = stringToBitmap(viewModel.state.image.value()).asImageBitmap(),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .padding(20.dp)
-                                .size(300.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                        )
+                        if (viewModel.state.image.value().isNotEmpty()) {
+                            Image(
+                                bitmap = stringToBitmap(viewModel.state.image.value()).asImageBitmap(),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .aspectRatio(3f / 4f)
+                                    .heightIn(600.dp),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
 
-                        LottieAnimation(
-                            composition = composition,
-                            progress = { progress },
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier
+                    LottieAnimation(
+                        composition = composition,
+                        progress = { progress },
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
 
-                        )
-                    }
+                    )
                 }
-
             }
-
-
         }
     }
-
 }

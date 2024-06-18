@@ -21,7 +21,18 @@ class SwapRepositoryImpl @Inject constructor(
         )
         return if (result is ResultData.Success) {
             ResultData.Success(
-//                successData = result.data?.asDomain() ?: SwapImage()
+                successData = result.data
+            )
+        } else {
+            ResultData.Error(errorMessage = result.message)
+        }
+    }
+
+    override suspend fun requestQR(resultImage: Bitmap): ResultData<ByteArray?> {
+        val result = swapRemoteDataSource.requestQR(resultImage)
+
+        return if (result is ResultData.Success) {
+            ResultData.Success(
                 successData = result.data
             )
         } else {

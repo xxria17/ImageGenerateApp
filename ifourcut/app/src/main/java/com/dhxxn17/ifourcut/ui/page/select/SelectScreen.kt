@@ -39,6 +39,7 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dhxxn17.ifourcut.R
+import com.dhxxn17.ifourcut.common.setStatusBarColor
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
 import com.dhxxn17.ifourcut.ui.page.CharItem
@@ -82,15 +83,7 @@ class SelectScreen(
         Effect(viewModel)
 
         SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = Color.White.toArgb()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
-                windowInsetsController.isAppearanceLightStatusBars = true
-            } else {
-                // 이전 버전의 안드로이드에서는 이 방법을 사용
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            }
+            setStatusBarColor(view, Color.White)
         }
 
         Box(
@@ -106,18 +99,22 @@ class SelectScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
+
+                    Spacer(Modifier.height(50.dp))
+
                     Text(
                         text = stringResource(id = R.string.select_title),
                         fontFamily = FontFamily(Font(R.font.pretendard_extrabold)),
                         color = Color.Black,
-                        fontSize = 25.sp,
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 50.dp, bottom = 5.dp)
+                        fontSize = 55.sp,
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 80.dp, bottom = 5.dp)
                     )
 
                     Text(
                         text = stringResource(id = R.string.select_description),
-                        style = Typography.bodyMedium,
+                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                         color = Color.Black,
+                        fontSize = 50.sp,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }

@@ -10,7 +10,6 @@ import com.dhxxn17.ifourcut.common.bitmapToString
 import com.dhxxn17.ifourcut.ui.base.BaseUiAction
 import com.dhxxn17.ifourcut.ui.base.BaseUiState
 import com.dhxxn17.ifourcut.ui.base.BaseViewModel
-import com.google.android.gms.ads.rewarded.RewardedAd
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +21,7 @@ class LoadingViewModel @Inject constructor(
     private val swapUseCase: SwapUseCase,
     private val sendAllSelectDataUseCase: SendAllSelectDataUseCase,
     private val saveSuccessImageUseCase: SaveSuccessImageUseCase
-): BaseViewModel() {
+) : BaseViewModel() {
 
     val state: LoadingContract.LoadingState
         get() = state()
@@ -43,24 +42,18 @@ class LoadingViewModel @Inject constructor(
 
     override fun initialData() {
         state.image.sendState { "" }
-        state.ad.sendState { null }
         state.isCompleted.sendState { false }
-        state.isAdDone.sendState { false }
+        state.isLoading.sendState { false }
     }
 
     override fun handleEvents(action: BaseUiAction) {
-        when(action) {
+        when (action) {
             is LoadingContract.Action.JobCancel -> {
                 cancelRequest()
             }
-            is LoadingContract.Action.SetRewardedAd -> {
-                setInterstitialAd(action.ad)
-            }
+
             is LoadingContract.Action.RequestSwap -> {
                 requestSwapImage()
-            }
-            is LoadingContract.Action.IsAdDone -> {
-                state.isAdDone.sendState { action.isDone }
             }
         }
     }
@@ -68,20 +61,17 @@ class LoadingViewModel @Inject constructor(
     override fun initialState(): BaseUiState {
         return LoadingContract.LoadingState(
             image = mutableCutStateOf(""),
-            ad = mutableCutStateOf(null),
             isCompleted = mutableCutStateOf(false),
-            isAdDone = mutableCutStateOf(false)
+            isLoading = mutableCutStateOf(false)
         )
     }
 
-    private fun setInterstitialAd(ad: RewardedAd?) {
-        state.ad.sendState { ad }
-    }
 
     private fun requestSwapImage() {
         if (job != null && job?.isActive == true) return
 
         job = viewModelScope.launch {
+            state.isLoading.sendState { true }
             val data = sendAllSelectDataUseCase.invoke()
             val image = data.myImage?.let { bitmapToString(it) } ?: ""
             state.image.sendState { image }
@@ -96,15 +86,15 @@ class LoadingViewModel @Inject constructor(
                 if (response is ResultData.Success) {
                     response.data?.let { _data ->
                         saveSuccessImageUseCase.invoke(_data)
-
                         state.isCompleted.sendState { true }
                     }
-
+                    state.isLoading.sendState { false }
                 } else {
                     sendEffect(LoadingContract.Effect.RequestFail)
                     if (response is ResultData.Error) {
                         Log.e("LoadingViewModel", "${response.errorData}")
                     }
+                    state.isLoading.sendState { false }
                 }
             } else {
                 Log.e("LoadingViewModel", "images all null")

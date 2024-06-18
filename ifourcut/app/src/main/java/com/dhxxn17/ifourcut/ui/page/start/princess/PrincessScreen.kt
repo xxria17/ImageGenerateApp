@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,32 +53,17 @@ class PrincessScreen(
 
     @Composable
     override fun CreateContent() {
-        val view = LocalView.current
         val scrollState = rememberScrollState()
+        val configuration = LocalConfiguration.current
+        val screenHeight = configuration.screenHeightDp.dp
+        val buttonHeight = screenHeight / 10
 
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = Color(0xffF8D9DC).toArgb()
-        }
         Box(
             modifier = Modifier
                 .background(Color.White)
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.background),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.matchParentSize()
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White.copy(alpha = 0.5f))
-            )
 
             Column(
                 modifier = Modifier
@@ -105,7 +92,7 @@ class PrincessScreen(
                             append(stringResource(id = R.string.start_title_2))
                         }
                     },
-                    fontSize = 30.sp,
+                    fontSize = 50.sp,
                     color = colorResource(id = R.color.main_black),
                     softWrap = false
                 )
@@ -115,7 +102,7 @@ class PrincessScreen(
                 Image(
                     painter = painterResource(id = R.drawable.complete),
                     contentDescription = null,
-                    modifier = Modifier.size(350.dp)
+                    modifier = Modifier.size(800.dp)
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -128,24 +115,24 @@ class PrincessScreen(
                     Image(
                         painter = painterResource(id = R.drawable.face1),
                         contentDescription = null,
-                        modifier = Modifier.size(90.dp)
+                        modifier = Modifier.size(180.dp)
                     )
 
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
 
                     Image(
                         painter = painterResource(id = R.drawable.heart),
                         contentDescription = null,
-                        modifier = Modifier.size(30.dp),
-                        colorFilter = ColorFilter.tint(Color.White)
+                        modifier = Modifier.size(60.dp),
+                        colorFilter = ColorFilter.tint(Color(0xffED6945))
                     )
 
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
 
                     Image(
                         painter = painterResource(id = R.drawable.ref2),
                         contentDescription = null,
-                        modifier = Modifier.size(90.dp)
+                        modifier = Modifier.size(180.dp)
                     )
                 }
 
@@ -158,19 +145,20 @@ class PrincessScreen(
                         )
                     },
                     modifier = Modifier
+                        .padding(15.dp)
                         .fillMaxWidth()
-                        .padding(20.dp),
+                        .height(buttonHeight),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.main_pink),
+                        containerColor = colorResource(id = R.color.main_orange),
                     ),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
                         text = stringResource(id = R.string.start_button),
                         color = Color.White,
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                        modifier = Modifier.padding(10.dp)
+                        fontSize = 45.sp,
+                        fontFamily = FontFamily(Font(R.font.pretendard_medium)),
+                        modifier = Modifier.padding(10.dp),
                     )
                 }
             }

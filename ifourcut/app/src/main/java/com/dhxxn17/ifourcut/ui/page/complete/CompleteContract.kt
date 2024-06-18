@@ -10,10 +10,17 @@ class CompleteContract {
     data class CompleteState(
         val image: CutState<Bitmap?>,
         val originFaceImg: CutState<Bitmap?>,
-
+        val qrImage: CutState<Bitmap?>,
+        val showDialog: CutState<Boolean>,
+        val isLoading: CutState<Boolean>
     ): BaseUiState
 
-    sealed class Action: BaseUiAction {}
+    sealed class Action: BaseUiAction {
+        data class RequestQRCode(val img: Bitmap): Action()
+
+        data class SetShowDialog(val isShow: Boolean): Action()
+
+    }
 
     sealed class Effect: BaseUiEffect {}
 }

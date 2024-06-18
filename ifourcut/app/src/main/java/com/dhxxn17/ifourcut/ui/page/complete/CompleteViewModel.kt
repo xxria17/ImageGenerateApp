@@ -1,7 +1,12 @@
 package com.dhxxn17.ifourcut.ui.page.complete
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Base64
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.viewModelScope
+import com.dhxxn17.domain.usecase.RequestQRUseCase
 import com.dhxxn17.domain.usecase.SendAllSelectDataUseCase
 import com.dhxxn17.ifourcut.ui.base.BaseUiAction
 import com.dhxxn17.ifourcut.ui.base.BaseUiState
@@ -14,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CompleteViewModel @Inject constructor(
-    private val useCase: SendAllSelectDataUseCase
+    private val useCase: SendAllSelectDataUseCase,
+    private val qrUseCase: RequestQRUseCase
 ): BaseViewModel() {
 
     val state: CompleteContract.CompleteState
@@ -37,10 +43,36 @@ class CompleteViewModel @Inject constructor(
     override fun initialData() {
         state.image.sendState { null }
         state.originFaceImg.sendState { null }
+        state.qrImage.sendState { null }
+        state.isLoading.sendState { false }
+        state.showDialog.sendState { false }
     }
 
     override fun handleEvents(action: BaseUiAction) {
+        when(action) {
+            is CompleteContract.Action.RequestQRCode -> {
+                requestQRCode(action.img)
+            }
+            is CompleteContract.Action.SetShowDialog -> {
+                state.showDialog.sendState { action.isShow }
+            }
+        }
+    }
 
+    private fun requestQRCode(img: Bitmap) {
+        if (job != null && job?.isActive == true) return
+
+        job = viewModelScope.launch {
+            state.showDialog.sendState { true }
+            state.isLoading.sendState { true }
+
+            val result = qrUseCase.requestQR(img)
+            state.isLoading.sendState { false }
+            result.data?.let { _img ->
+                val bitmap = BitmapFactory.decodeByteArray(_img, 0, _img.size)
+                state.qrImage.sendState { bitmap }
+            }
+        }
     }
 
     private fun getCompleteImage() {
@@ -57,7 +89,10 @@ class CompleteViewModel @Inject constructor(
     override fun initialState(): BaseUiState {
         return CompleteContract.CompleteState(
             image = mutableCutStateOf(null),
-            originFaceImg = mutableCutStateOf(null)
+            originFaceImg = mutableCutStateOf(null),
+            qrImage = mutableCutStateOf(null),
+            showDialog = mutableCutStateOf(false),
+            isLoading = mutableCutStateOf(false)
         )
     }
 }

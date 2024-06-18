@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,6 +30,7 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dhxxn17.ifourcut.R
+import com.dhxxn17.ifourcut.common.setStatusBarColor
 import com.dhxxn17.ifourcut.model.LIST_TYPE
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
@@ -43,15 +45,7 @@ class ListScreen(
         val view = LocalView.current
 
         SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = Color.White.toArgb()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
-                windowInsetsController.isAppearanceLightStatusBars = true
-            } else {
-                // 이전 버전의 안드로이드에서는 이 방법을 사용
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            }
+            setStatusBarColor(view, Color.White)
         }
 
         Column(
@@ -67,21 +61,16 @@ class ListScreen(
                 Image(
                     painter = painterResource(id = R.drawable.aizac_logo),
                     contentDescription = null,
-                    modifier = Modifier.width(80.dp),
+                    modifier = Modifier.height(60.dp),
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
 
-//                Image(
-//                    painter = painterResource(id = R.drawable.ic_my),
-//                    contentDescription = null,
-//                    modifier = Modifier.size(30.dp)
-//                )
             }
 
             LazyColumn (
-                modifier = Modifier.padding(top = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier.padding(top = 40.dp),
+                verticalArrangement = Arrangement.spacedBy(25.dp)
             ) {
                 viewModel.state.data.value().forEach { _data ->
                     item {
@@ -100,8 +89,6 @@ class ListScreen(
                             ListItem(
                                 title = _data.title,
                                 image = _data.image,
-                                subTitle = _data.subTitle,
-                                desc = _data.desc
                             )
                         }
                     }

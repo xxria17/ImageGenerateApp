@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -19,10 +21,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.dhxxn17.ifourcut.R
+import com.dhxxn17.ifourcut.common.setStatusBarColor
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.navigation.Screens
 import com.dhxxn17.ifourcut.ui.theme.Typography
@@ -51,9 +56,11 @@ class IntroScreen(
     @Composable
     override fun CreateContent() {
         val view = LocalView.current
+        val configuration = LocalConfiguration.current
+        val screenHeight = configuration.screenHeightDp.dp
+        val buttonHeight = screenHeight / 10
         SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = Color.Black.toArgb()
+            setStatusBarColor(view, Color.Black)
         }
         Box(
             modifier = Modifier
@@ -61,21 +68,23 @@ class IntroScreen(
                 .background(Color.Black)
         ) {
 
+
             AutoInfiniteImagePager(
                 images = arrayListOf(
-                    R.drawable.intro1,
-                    R.drawable.intro2,
-                    R.drawable.intro3,
-                    R.drawable.intro4,
-                    R.drawable.intro5,
-                    R.drawable.intro6,
-                    R.drawable.intro7,
-                    R.drawable.intro8,
-                    R.drawable.intro9,
-                    R.drawable.intro10,
-                    R.drawable.intro11,
-                    R.drawable.intro12,
+                    R.drawable.result3,
+                    R.drawable.result4,
+                    R.drawable.result5,
+                    R.drawable.result6,
+                    R.drawable.result7,
                 )
+            )
+
+            Image(
+                painter = painterResource(id = R.drawable.aizac_logo),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(start = 30.dp, top = 30.dp)
+                    .height(80.dp)
             )
 
             Column(
@@ -85,46 +94,31 @@ class IntroScreen(
                     .align(Alignment.BottomStart),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.aizac_logo),
-                    contentDescription = "",
+
+                Box(
                     modifier = Modifier
-                        .height(80.dp)
-                )
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                Text(
-                    text = stringResource(id = R.string.intro_title),
-                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(25.dp))
-
-                Button(
-                    onClick = {
-                        navController.navigate(
-                            Screens.ListScreen.route
-                        )
-                    },
-                    modifier = Modifier
+                        .padding(20.dp)
                         .fillMaxWidth()
-                        .padding(start = 10.dp, end = 10.dp, bottom = 30.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White
-                    ),
-                    border = BorderStroke(1.dp, Color.White),
+                        .clip(RoundedCornerShape(32.dp))
+                        .background(Color(0xFF0A310C))
+                        .height(buttonHeight)
+                        .clickable {
+                            navController.navigate(
+                                Screens.ListScreen.route
+                            )
+                        },
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = stringResource(id = R.string.intro_next),
-                        color = Color.Black,
-                        style = Typography.bodyMedium,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.pretendard_medium)),
+                        fontSize = 55.sp,
                         modifier = Modifier.padding(10.dp)
                     )
                 }
+                Spacer(modifier = Modifier.height(25.dp))
+
             }
         }
     }

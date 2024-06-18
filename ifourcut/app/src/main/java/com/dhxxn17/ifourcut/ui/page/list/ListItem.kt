@@ -17,31 +17,27 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.ui.theme.Typography
+import com.dhxxn17.ifourcut.ui.theme.pretender
 
 @Composable
 fun ListItem(
     title: String,
     image: Int,
-    subTitle: String,
-    desc: String
 ) {
     Column(
         modifier = Modifier
     ) {
-        Text(
-            text = title,
-            style = Typography.titleSmall,
-            color = Color.Black,
-            modifier = Modifier.padding(bottom = 10.dp)
-        )
 
         Box(
             modifier = Modifier
-                .aspectRatio(3f / 2f)
+                .aspectRatio(4f / 3f)
         ) {
             Image(
                 painter = painterResource(id = image),
@@ -61,19 +57,15 @@ fun ListItem(
             Column(
                 modifier = Modifier
                     .padding(10.dp)
-                    .align(Alignment.BottomStart)
+                    .align(Alignment.TopStart)
             ) {
                 Text(
-                    text = subTitle,
-                    style = Typography.bodyMedium,
+                    text = title,
+                    fontFamily = FontFamily(Font(R.font.pretendard_extrabold)),
+                    fontSize = 50.sp,
                     color = Color.White
                 )
 
-                Text(
-                    text = desc,
-                    style = Typography.bodySmall,
-                    color = Color.White
-                )
             }
         }
     }

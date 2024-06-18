@@ -25,47 +25,45 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.dhxxn17.ifourcut.BuildConfig
 import com.dhxxn17.ifourcut.R
 import com.dhxxn17.ifourcut.common.generateFileName
 import com.dhxxn17.ifourcut.common.saveBitmapImage
 import com.dhxxn17.ifourcut.ui.base.BaseScreen
 import com.dhxxn17.ifourcut.ui.base.findActivity
 import com.dhxxn17.ifourcut.ui.navigation.Screens
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
 import java.io.File
 import java.io.FileOutputStream
 
@@ -82,11 +80,6 @@ class CompleteScreen(
         val onBackPressedDispatcher =
             LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
-        val interactionSource = remember {
-            MutableInteractionSource()
-        }
-        val ripple = rememberRipple(bounded = false)
-
         DisposableEffect(Unit) {
             val callback = object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -99,166 +92,152 @@ class CompleteScreen(
             }
         }
 
+        if (viewModel.state.showDialog.value()) {
+            AlertDialog(
+                onDismissRequest = {
+                    viewModel.sendAction(CompleteContract.Action.SetShowDialog(false))
+                },
+                title = {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.White),
+                    ) {
+                        Text(
+                            text = "사진을 다운로드 받아보세요!",
+                            fontSize = 35.sp,
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.pretendard_medium)),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                },
+                text = {
+                    Box(
+                        modifier = Modifier.size(600.dp)
+                            .background(Color.White)
+                            .padding(30.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        viewModel.state.qrImage.value()?.let {
+                            Image(
+                                bitmap = it.asImageBitmap(),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } ?: run {
+                            CircularProgressIndicator()
+                        }
+                    }
+                },
+                confirmButton = {
+
+                },
+                dismissButton = {
+                },
+                containerColor = Color.White
+            )
+        }
 
         Box(
             modifier = Modifier
                 .background(Color.White)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .verticalScroll(scrollState),
         ) {
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 12.dp)
-                    .verticalScroll(scrollState),
-                verticalArrangement = Arrangement.Top
-            ) {
-                Row(
+            viewModel.state.image.value()?.let {
+                Image(
+                    bitmap = it.asImageBitmap(),
+                    contentDescription = "",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .aspectRatio(3f/ 4f)
+                        .align(Alignment.Center),
+                    contentScale = ContentScale.Fit
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(30.dp),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+
+                Column(
+                    modifier = Modifier
+                        .background(color = Color.Black.copy(0.3f), shape = CircleShape)
+                        .clickable {
+                            navController.popBackStack(
+                                Screens.ListScreen.route,
+                                false
+                            )
+                        }
+                        .padding(10.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .background(color = Color.Black, shape = CircleShape)
-                            .indication(interactionSource, ripple)
-                            .clickable {
-                                navController.popBackStack(
-                                    Screens.ListScreen.route,
-                                    false
-                                )
-                            }
-                            .size(50.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_close),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(27.dp),
-                            colorFilter = ColorFilter.tint(Color.White)
-                        )
-                    }
-
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                viewModel.state.image.value()?.let {
                     Image(
-                        bitmap = it.asImageBitmap(),
+                        painter = painterResource(id = R.drawable.undo),
                         contentDescription = "",
                         modifier = Modifier
-                            .fillMaxWidth(),
-//                        contentScale = ContentScale.FillWidth
+                            .size(100.dp),
+                        colorFilter = ColorFilter.tint(Color.White)
                     )
-
                 }
 
-//                Spacer(modifier = Modifier.weight(1f))
-
-//                BannersAds()
+                Column(
+                    modifier = Modifier
+                        .background(color = Color.Black.copy(0.3f), shape = CircleShape)
+                        .clickable {
+                            navController.popBackStack(Screens.UploadScreen.route, false)
+                        }
+                        .padding(10.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_rephoto),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(100.dp),
+                        colorFilter = ColorFilter.tint(Color.White)
+                    )
+                }
 
                 Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(top = 50.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    modifier = Modifier
+                        .background(color = Color.Black.copy(0.3f), shape = CircleShape)
+                        .clickable {
+                            viewModel.state.image
+                                .value()
+                                ?.let {
+                                    val logoImg = addOnlyLogo(context, it)
+                                    viewModel.sendAction(
+                                        CompleteContract.Action.RequestQRCode(
+                                            logoImg
+                                        )
+                                    )
+                                }
+
+                        }
+                        .padding(10.dp),
                 ) {
-
-                    Row(
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_download),
+                        contentDescription = "",
                         modifier = Modifier
-                            .background(color = Color(0xFF0C2081), shape = CircleShape)
-                            .clickable {
-                                navController.popBackStack(Screens.UploadScreen.route, false)
-                            }
-                            .padding(20.dp),
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_rephoto),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(45.dp),
-                            colorFilter = ColorFilter.tint(Color.White)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .background(color = Color(0xFF0C2081), shape = CircleShape)
-                            .clickable {
-                                viewModel.state.image
-                                    .value()
-                                    ?.let {
-                                        addLogoAndSave(context, it)
-                                        Toast
-                                            .makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT)
-                                            .show()
-
-                                    }
-                            }
-                            .padding(20.dp),
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_download),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(45.dp),
-                            colorFilter = ColorFilter.tint(Color.White)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .background(color = Color(0xFF0C2081), shape = CircleShape)
-                            .clickable {
-                                viewModel.state.image
-                                    .value()
-                                    ?.let {
-                                        viewModel.state.originFaceImg.value()?.let { _origin ->
-                                            shareImage(it, context.findActivity(), _origin)
-                                        }
-                                    }
-                            }
-                            .padding(20.dp),
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_share),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(45.dp),
-                            colorFilter = ColorFilter.tint(Color.White)
-                        )
-                    }
-
-
+                            .size(100.dp),
+                        colorFilter = ColorFilter.tint(Color.White)
+                    )
                 }
-
 
             }
         }
 
-    }
-
-    @Composable
-    fun BannersAds() {
-        AndroidView(
-            modifier = Modifier.fillMaxWidth(),
-            factory = { context ->
-                AdView(context).apply {
-                    setAdSize(AdSize.BANNER)
-                    adUnitId = BuildConfig.ADMOB_AD_BANNER_ID_TEST
-                    loadAd(AdRequest.Builder().build())
-                }
-            },
-            update = { adView ->
-                adView.loadAd(AdRequest.Builder().build())
-            }
-        )
     }
 
     private fun shareImage(bitmap: Bitmap, activity: Activity, origin: Bitmap) {
@@ -288,7 +267,7 @@ class CompleteScreen(
 
     private fun addOnlyLogo(context: Context, imageBitmap: Bitmap): Bitmap {
         // 로고 이미지 로드
-        val logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.aizac_logo)
+        val logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.aizac_logo_url)
 
         // 로고 비율 계산
         val logoAspectRatio = logoBitmap.width.toFloat() / logoBitmap.height.toFloat()
@@ -313,7 +292,8 @@ class CompleteScreen(
         }
 
         // 로고 비트맵 스케일링
-        val scaledLogo = Bitmap.createScaledBitmap(logoBitmap, logoWidth.toInt(), logoHeight.toInt(), false)
+        val scaledLogo =
+            Bitmap.createScaledBitmap(logoBitmap, logoWidth.toInt(), logoHeight.toInt(), false)
 
         // 결과 비트맵 생성
         val resultBitmap = Bitmap.createBitmap(imageWidth, imageHeight, imageBitmap.config)
@@ -332,20 +312,15 @@ class CompleteScreen(
     }
 
     private fun addLogo(context: Context, imageBitmap: Bitmap, origin: Bitmap): Bitmap {
-        // 로고 이미지 로드
         val logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.aizac_logo)
 
-        // 로고 비율 계산
         val logoAspectRatio = logoBitmap.width.toFloat() / logoBitmap.height.toFloat()
 
-        // 원본 이미지 크기
         val imageWidth = imageBitmap.width
         val imageHeight = imageBitmap.height
 
-        // 여백 크기
         val padding = 50
 
-        // 로고 크기 계산 (이미지 크기의 1/5)
         val scaleFactor = 4
         val maxWidth = imageWidth / scaleFactor
         val maxHeight = imageHeight / scaleFactor
@@ -357,47 +332,49 @@ class CompleteScreen(
             logoWidth = maxHeight * logoAspectRatio
         }
 
-        // 로고 비트맵 스케일링
-        val scaledLogo = Bitmap.createScaledBitmap(logoBitmap, logoWidth.toInt(), logoHeight.toInt(), false)
+        val scaledLogo =
+            Bitmap.createScaledBitmap(logoBitmap, logoWidth.toInt(), logoHeight.toInt(), false)
 
-        // 결과 비트맵 생성
         val resultBitmap = Bitmap.createBitmap(imageWidth, imageHeight, imageBitmap.config)
         val canvas = Canvas(resultBitmap)
 
-        // 원본 이미지 그리기
         canvas.drawBitmap(imageBitmap, 0f, 0f, null)
 
-        // 로고 위치 계산 (오른쪽 하단)
         val logoX = imageWidth - logoWidth.toInt() - padding
         val logoY = imageHeight - logoHeight.toInt() - padding
 
-        // 로고 그리기
         canvas.drawBitmap(scaledLogo, logoX.toFloat(), logoY.toFloat(), null)
 
-        // 원본 이미지 크기의 1/5 크기로 동그란 이미지 만들기
         val circularScaleFactor = 2
         val circularMaxWidth = imageWidth / circularScaleFactor
         val circularMaxHeight = imageHeight / circularScaleFactor
-        var circularWidth: Float = circularMaxWidth.toFloat()
-        var circularHeight: Float = circularMaxWidth.toFloat()
 
-        // 원본 비율 유지하면서 크기 조정
-        if (circularHeight > circularMaxHeight) {
-            circularHeight = circularMaxHeight.toFloat()
-            circularWidth = circularMaxHeight.toFloat()
-        }
+        val widthRatio = circularMaxWidth.toFloat() / origin.width
+        val heightRatio = circularMaxHeight.toFloat() / origin.height
+        val scaleFactor2 = Math.min(widthRatio, heightRatio)
 
-        val scaledCircularImage = Bitmap.createScaledBitmap(origin, circularWidth.toInt(), circularHeight.toInt(), false)
-        val circularImageBitmap = getCircularBitmap(scaledCircularImage)
+        val scaledWidth = (origin.width * scaleFactor2).toInt()
+        val scaledHeight = (origin.height * scaleFactor2).toInt()
 
-        // 동그란 이미지 위치 계산 (왼쪽 하단)
+        val scaledCircularImage =
+            Bitmap.createScaledBitmap(origin, scaledWidth, scaledHeight, false)
+
+        val size = Math.min(scaledWidth, scaledHeight)
+        val squareBitmap = Bitmap.createBitmap(scaledCircularImage, 0, 0, size, size)
+
+        val circularImageBitmap = getCircularBitmap(squareBitmap)
+
         val circularPaddingBottom = 150
         val circularPaddingLeft = 20
         val circularImageX = circularPaddingLeft
         val circularImageY = imageHeight - circularImageBitmap.height - circularPaddingBottom
 
-        // 동그란 이미지 그리기
-        canvas.drawBitmap(circularImageBitmap, circularImageX.toFloat(), circularImageY.toFloat(), null)
+        canvas.drawBitmap(
+            circularImageBitmap,
+            circularImageX.toFloat(),
+            circularImageY.toFloat(),
+            null
+        )
 
         return resultBitmap
     }
@@ -430,8 +407,5 @@ class CompleteScreen(
         // 이미지 저장 함수 호출
         saveBitmapImage(resultBitmap, context)
     }
-
-
-
 
 }

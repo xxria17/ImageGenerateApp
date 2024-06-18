@@ -2,6 +2,7 @@ package com.dhxxn17.data.network
 
 import android.util.Log
 import com.dhxxn17.data.BuildConfig
+import com.dhxxn17.data.api.QRApi
 import com.dhxxn17.data.api.SwapApi
 import dagger.Module
 import dagger.Provides
@@ -43,6 +44,7 @@ class RetrofitService {
 
     @Provides
     @Singleton
+    @SwapRetrofit
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
@@ -51,15 +53,32 @@ class RetrofitService {
             .build()
     }
 
+    @Provides
+    @Singleton
+    @QRRetrofit
+    fun provideQRRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.QR_URL)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+    }
+
 
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit): SwapApi {
+    fun provideApiService(@SwapRetrofit retrofit: Retrofit): SwapApi {
         return retrofit.create(SwapApi::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideQRApiService(@QRRetrofit retrofit: Retrofit): QRApi {
+        return retrofit.create(QRApi::class.java)
+    }
+
+
     companion object {
         private const val LOGGER_NAME = "AIZACSTORY_LOGGER"
-        private const val BASE_URL =""
     }
 }

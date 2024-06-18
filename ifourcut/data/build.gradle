@@ -20,6 +20,7 @@ android {
         def localProperties = new Properties()
         localProperties.load(new FileInputStream(rootProject.file("local.properties")))
         buildConfigField("String", "BASE_URL", localProperties['BASE_URL'])
+        buildConfigField("String", "QR_URL", localProperties['QR_URL'])
     }
 
     buildTypes {

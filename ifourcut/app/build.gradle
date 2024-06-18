@@ -22,18 +22,16 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
-        def localProperties = new Properties()
-        localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-        def admobAppId = localProperties.getProperty("ADMOB_APP_ID")
-        buildConfigField "String", "ADMOB_APP_ID", "\"${admobAppId}\""
-        buildConfigField "String", "ADMOB_AD_REWARD_ID", "\"${localProperties.getProperty("ADMOB_AD_REWARD_ID")}\""
-        buildConfigField "String", "ADMOB_AD_REWARD_ID_TEST", "\"${localProperties.getProperty("ADMOB_AD_REWARD_ID_TEST")}\""
-        buildConfigField "String", "ADMOB_AD_INTERSTITIAL_ID", "\"${localProperties.getProperty("ADMOB_AD_INTERSTITIAL_ID")}\""
-        buildConfigField "String", "ADMOB_AD_INTERSTITIAL_ID_TEST", "\"${localProperties.getProperty("ADMOB_AD_INTERSTITIAL_ID_TEST")}\""
-        buildConfigField "String", "ADMOB_AD_BANNER_ID", "\"${localProperties.getProperty("ADMOB_AD_BANNER_ID")}\""
-        buildConfigField "String", "ADMOB_AD_BANNER_ID_TEST", "\"${localProperties.getProperty("ADMOB_AD_BANNER_ID_TEST")}\""
 
-        manifestPlaceholders = [admobAppId:admobAppId]
+    }
+
+    signingConfigs {
+        release {
+            keyAlias 'key0'
+            keyPassword 'aizac123!'
+            storeFile file('aizacstory.jks')
+            storePassword 'aizac123!'
+        }
     }
 
     buildTypes {
@@ -93,8 +91,6 @@ dependencies {
 
     debugImplementation deps.compose.ui_tooling
     debugImplementation deps.compose.ui_test_manifest
-
-    implementation 'com.google.android.gms:play-services-ads-lite:23.0.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

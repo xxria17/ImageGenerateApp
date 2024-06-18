@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.dhxxn17.ifourcut.ui.navigation.IMAGE_URL_ARG
 import com.dhxxn17.ifourcut.ui.navigation.Screens
 import com.dhxxn17.ifourcut.ui.navigation.TYPE_ARG
 import com.dhxxn17.ifourcut.ui.page.camera.CameraCompleteScreen
@@ -30,7 +31,6 @@ import com.dhxxn17.ifourcut.ui.page.start.hero.HeroScreen
 import com.dhxxn17.ifourcut.ui.page.start.princess.PrincessScreen
 import com.dhxxn17.ifourcut.ui.page.upload.UploadScreen
 import com.dhxxn17.ifourcut.ui.theme.IfourcutTheme
-import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -43,7 +43,6 @@ class MainActivity : ComponentActivity() {
                 MainContent()
             }
         }
-        MobileAds.initialize(this)
     }
 
     @Composable

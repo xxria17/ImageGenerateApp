@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -52,32 +53,17 @@ class HeroScreen(
 
     @Composable
     override fun CreateContent() {
-        val view = LocalView.current
         val scrollState = rememberScrollState()
+        val configuration = LocalConfiguration.current
+        val screenHeight = configuration.screenHeightDp.dp
+        val buttonHeight = screenHeight / 10
 
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = Color(0xffF6F3F4).toArgb()
-        }
         Box(
             modifier = Modifier
                 .background(Color.White)
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.background_blue),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.matchParentSize()
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White.copy(alpha = 0.5f))
-            )
 
             Column(
                 modifier = Modifier
@@ -106,7 +92,7 @@ class HeroScreen(
                             append(stringResource(id = R.string.start_title_2))
                         }
                     },
-                    fontSize = 30.sp,
+                    fontSize = 50.sp,
                     color = colorResource(id = R.color.main_black),
                     softWrap = false
                 )
@@ -117,7 +103,7 @@ class HeroScreen(
                     painter = painterResource(id = R.drawable.list_img2),
                     contentDescription = null,
                     modifier = Modifier
-                        .height(300.dp)
+                        .height(800.dp)
                         .aspectRatio(1f),
                     contentScale = ContentScale.Crop
                 )
@@ -132,25 +118,25 @@ class HeroScreen(
                     Image(
                         painter = painterResource(id = R.drawable.face2),
                         contentDescription = null,
-                        modifier = Modifier.size(90.dp),
+                        modifier = Modifier.size(180.dp),
                         contentScale = ContentScale.Crop
                     )
 
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
 
                     Image(
                         painter = painterResource(id = R.drawable.heart),
                         contentDescription = null,
-                        modifier = Modifier.size(30.dp),
-                        colorFilter = ColorFilter.tint(Color.White)
+                        modifier = Modifier.size(60.dp),
+                        colorFilter = ColorFilter.tint(Color(0xffED6945))
                     )
 
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
 
                     Image(
                         painter = painterResource(id = R.drawable.select7),
                         contentDescription = null,
-                        modifier = Modifier.size(90.dp),
+                        modifier = Modifier.size(180.dp),
                         contentScale = ContentScale.Crop
                     )
                 }
@@ -164,17 +150,18 @@ class HeroScreen(
                         )
                     },
                     modifier = Modifier
+                        .padding(15.dp)
                         .fillMaxWidth()
-                        .padding(20.dp),
+                        .height(buttonHeight),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.main_blue),
+                        containerColor = colorResource(id = R.color.main_orange),
                     ),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
                         text = stringResource(id = R.string.start_button),
                         color = Color.White,
-                        fontSize = 16.sp,
+                        fontSize = 45.sp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                         modifier = Modifier.padding(10.dp)
                     )

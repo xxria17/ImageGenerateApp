@@ -12,4 +12,7 @@ interface SwapRepository {
         poseImage: Drawable
     ): ResultData<ByteArray?>
 
+    suspend fun requestQR(
+        resultImage: Bitmap
+    ): ResultData<ByteArray?>
 }
